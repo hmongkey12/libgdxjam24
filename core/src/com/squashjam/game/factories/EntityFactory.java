@@ -3,75 +3,104 @@ package com.squashjam.game.factories;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.squashjam.game.behaviors.AbominationBehavior;
+import com.squashjam.game.behaviors.ChickenBehavior;
 import com.squashjam.game.behaviors.DroneBehavior;
 import com.squashjam.game.behaviors.GrenadierBehavior;
 import com.squashjam.game.entities.Entity;
-import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.utils.AssetManagerUtil;
 
 public class EntityFactory {
 
-    public static Entity createEnemyCharacter(EntityType entityType, int viewportWidth, int viewportHeight) {
-        Texture movingTexture;
-        Texture idleTexture;
-        Texture attackTexture;
-        int startHealth;
-        float speed;
-        float attackRange;
-        int attackDamage;
-        float attackCooldown;
-        EntityBehavior behavior;
-
+    public static Entity createEntity(EntityType entityType, EntityTeam team, int viewportWidth, int viewportHeight) {
         switch (entityType) {
             case ABOMINATION:
-                movingTexture = AssetManagerUtil.get().get("abomination_walk.png", Texture.class);
-                idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
-                attackTexture = AssetManagerUtil.get().get("abomination_attack.png", Texture.class);
-                startHealth = 800;
-                speed = 20;
-                attackRange = 50;
-                attackDamage = 50;
-                attackCooldown = 2f;
-                behavior = new AbominationBehavior();
-                break;
+                return createAbomination(team, viewportWidth, viewportHeight);
             case DRONE:
-                movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
-                idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
-                attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
-                startHealth = 100;
-                speed = 150;
-                attackRange = 50;
-                attackDamage = 10;
-                attackCooldown = 0.5f;
-                behavior = new DroneBehavior();
-                break;
+                return createDrone(team, viewportWidth, viewportHeight);
             case GRENADIER:
-                movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
-                idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
-                attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
-                startHealth = 100;
-                speed = 50; // Adjust Grenadier's speed as needed
-                attackRange = 50;
-                attackDamage = 100;
-                attackCooldown = 2f;
-                behavior = new GrenadierBehavior();
-                break;
+                return createGrenadier(team, viewportWidth, viewportHeight);
+            case CHICKEN:
+                return createChickenCharacter(team, viewportWidth, viewportHeight);
             default:
                 throw new IllegalArgumentException("Unsupported enemy type: " + entityType);
         }
+    }
 
+    private static Entity createAbomination(EntityTeam team, int viewportWidth, int viewportHeight) {
+        EntityType entityType = EntityType.ABOMINATION;
+        Texture movingTexture = AssetManagerUtil.get().get("abomination_walk.png", Texture.class);
+        Texture idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
+        Texture attackTexture = AssetManagerUtil.get().get("abomination_attack.png", Texture.class);
         int frameCols = 4;
         int frameRows = 2;
         float frameDuration = 0.2f;
         Vector2 startPosition = new Vector2(1000, 0); // Change the y-value if needed
-        EntityTeam team = EntityTeam.ENEMY;
+        int startHealth = 800;
+        float speed = 20;
+        float attackRange = 50;
+        int attackDamage = 50;
+        float attackCooldown = 2f;
+        AbominationBehavior behavior = new AbominationBehavior();
 
         return new Entity(entityType, movingTexture, idleTexture, attackTexture, frameCols, frameRows, frameDuration,
                 startPosition, startHealth, team, speed, attackRange, attackDamage, attackCooldown, viewportWidth, viewportHeight, behavior);
     }
+
+    private static Entity createDrone(EntityTeam team, int viewportWidth, int viewportHeight) {
+        EntityType entityType = EntityType.DRONE;
+        Texture movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
+        Texture idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
+        Texture attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
+        int frameCols = 4;
+        int frameRows = 2;
+        float frameDuration = 0.2f;
+        Vector2 startPosition = new Vector2(1000, 0); // Change the y-value if needed
+        int startHealth = 100;
+        float speed = 150;
+        float attackRange = 50;
+        int attackDamage = 10;
+        float attackCooldown = 0.5f;
+        DroneBehavior behavior = new DroneBehavior();
+
+        return new Entity(entityType, movingTexture, idleTexture, attackTexture, frameCols, frameRows, frameDuration,
+                startPosition, startHealth, team, speed, attackRange, attackDamage, attackCooldown, viewportWidth, viewportHeight, behavior);
+    }
+
+    private static Entity createGrenadier(EntityTeam team, int viewportWidth, int viewportHeight) {
+        EntityType entityType = EntityType.GRENADIER;
+        Texture movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
+        Texture idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
+        Texture attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
+        int frameCols = 4;
+        int frameRows = 2;
+        float frameDuration = 0.2f;
+        Vector2 startPosition = new Vector2(1000, 0); // Change the y-value if needed
+        int startHealth = 100;
+        float speed = 50; // Adjust Grenadier's speed as needed
+        float attackRange = 50;
+        int attackDamage = 100;
+        float attackCooldown = 2f;
+        GrenadierBehavior behavior = new GrenadierBehavior();
+        return new Entity(entityType, movingTexture, idleTexture, attackTexture, frameCols, frameRows, frameDuration, startPosition, startHealth, team, speed, attackRange, attackDamage, attackCooldown, viewportWidth, viewportHeight, behavior);
+    }
+
+    public static Entity createChickenCharacter(EntityTeam team, int viewportWidth, int viewportHeight) {
+        EntityType entityType = EntityType.CHICKEN;
+        Texture movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
+        Texture idleTexture = AssetManagerUtil.get().get("chicken_idle.png", Texture.class);
+        Texture attackTexture = AssetManagerUtil.get().get("chicken_attack.png", Texture.class);
+        int frameCols = 4;
+        int frameRows = 2;
+        float frameDuration = 0.1f;
+        Vector2 startPosition = new Vector2(10, viewportHeight * 0.1f);
+        int startHealth = 1000;
+        float speed = 0; // Chicken doesn't move
+        float attackRange = viewportWidth * 0.1f;
+        int attackDamage = 100;
+        float attackCooldown = 1f;
+        ChickenBehavior behavior = new ChickenBehavior();
+        return new Entity(entityType, movingTexture, idleTexture, attackTexture, frameCols, frameRows, frameDuration, startPosition, startHealth, team, speed, attackRange, attackDamage, attackCooldown, viewportWidth, viewportHeight, behavior);
+    }
 }
-
-
-
