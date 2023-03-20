@@ -5,15 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.squashjam.game.behaviors.DemolitionistBehavior;
-import com.squashjam.game.behaviors.GruntBehavior;
-import com.squashjam.game.behaviors.SniperBehavior;
 import com.squashjam.game.entities.Entity;
-import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
+import com.squashjam.game.factories.EntityFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +26,6 @@ public class InputHandler {
 
     public InputHandler(List<Entity> characters) {
         this.characters = characters;
-
-        // Load the textures
-        this.movingTexture = new Texture("moveleft.png");
-        this.idleTexture = new Texture("idle.png");
-        this.attackTexture = new Texture("attack1.png");
 
         // Initialize last key press times to current time
         lastKeyPressTimes = new HashMap<Integer, Float>();
@@ -89,16 +80,7 @@ public class InputHandler {
         int localGold = gold.get("gold");
         if (localGold >= 100) {
             gold.put("gold", localGold - 100);
-
-            EntityBehavior gruntBehavior = new GruntBehavior();
-            this.movingTexture = new Texture("moveleft.png");
-            this.idleTexture = new Texture("idle.png");
-            this.attackTexture = new Texture("attack1.png");
-            Entity newCharacter = new Entity(EntityType.GRUNT,
-                    movingTexture, idleTexture, attackTexture,
-                    4, 2, 0.1f,
-                    new Vector2(0, 0), 100,
-                    EntityTeam.PLAYER, 50, 50, 10, 1, viewportWidth, viewportHeight, gruntBehavior);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight);
             characters.add(newCharacter);
         }
     }
@@ -108,16 +90,7 @@ public class InputHandler {
         int sniperCost = 200; // Twice the gold cost of a Grunt Entity
         if (localGold >= sniperCost) {
             gold.put("gold", localGold - sniperCost);
-
-            EntityBehavior sniperBehavior = new SniperBehavior();
-            this.movingTexture = new Texture("sniper_walk.png");
-            this.idleTexture = new Texture("idle.png");
-            this.attackTexture = new Texture("sniper_attack.png");
-            Entity newCharacter = new Entity(EntityType.SNIPER,
-                    movingTexture, idleTexture, attackTexture,
-                    4, 2, 0.1f,
-                    new Vector2(0, 0), 100,
-                    EntityTeam.PLAYER, 50, 300, 10, 1, viewportWidth, viewportHeight, sniperBehavior);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight);
             characters.add(newCharacter);
         }
     }
@@ -128,16 +101,17 @@ public class InputHandler {
         if (localGold >= demolitionistCost) {
             gold.put("gold", localGold - demolitionistCost);
 
-            EntityBehavior demolitionistBehavior = new DemolitionistBehavior();
-            this.movingTexture = new Texture("moveleft.png");
-            this.idleTexture = new Texture("idle.png");
-            this.attackTexture = new Texture("attack1.png");
+//            EntityBehavior demolitionistBehavior = new DemolitionistBehavior();
+//            movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
+//            idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
+//            attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
 
-            Entity newCharacter = new Entity(EntityType.DEMOLITIONIST,
-                    movingTexture, idleTexture, attackTexture,
-                    4, 2, 0.1f,
-                    new Vector2(0, 0), 100,
-                    EntityTeam.PLAYER, 50, 50, 10, 1, viewportWidth, viewportHeight, demolitionistBehavior);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight);
+//            Entity newCharacter = new Entity(EntityType.DEMOLITIONIST,
+//                    movingTexture, idleTexture, attackTexture,
+//                    4, 2, 0.1f,
+//                    new Vector2(0, 0), 100,
+//                    EntityTeam.PLAYER, 50, 50, 10, 1, viewportWidth, viewportHeight, demolitionistBehavior);
             characters.add(newCharacter);
         }
     }
