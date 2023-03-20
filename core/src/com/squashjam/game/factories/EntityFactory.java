@@ -1,14 +1,13 @@
 package com.squashjam.game.factories;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.squashjam.game.behaviors.AbominationBehavior;
 import com.squashjam.game.behaviors.DroneBehavior;
 import com.squashjam.game.behaviors.GrenadierBehavior;
+import com.squashjam.game.entities.Entity;
 import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.enums.EntityTeam;
-import com.squashjam.game.entities.Entity;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.utils.AssetManagerUtil;
 
