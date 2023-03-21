@@ -7,6 +7,7 @@ public enum EntityType {
     GRENADIER,
     ABOMINATION,
     DEMOLITIONIST,
-    DRONE;
+    DRONE,
+    CHICKEN;
 }
 

@@ -56,7 +56,7 @@ public class InputHandler {
             camera.position.x += 100 * delta;
         }
         float halfViewportWidth = camera.viewportWidth / 2f;
-        float maxX = 2000 - halfViewportWidth;
+        float maxX = 1600 - halfViewportWidth;
         float minX = halfViewportWidth;
         camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX);
     }
@@ -100,18 +100,7 @@ public class InputHandler {
         int demolitionistCost = 300; // Three times the gold cost of a Grunt Entity
         if (localGold >= demolitionistCost) {
             gold.put("gold", localGold - demolitionistCost);
-
-//            EntityBehavior demolitionistBehavior = new DemolitionistBehavior();
-//            movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
-//            idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
-//            attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
-
             Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight);
-//            Entity newCharacter = new Entity(EntityType.DEMOLITIONIST,
-//                    movingTexture, idleTexture, attackTexture,
-//                    4, 2, 0.1f,
-//                    new Vector2(0, 0), 100,
-//                    EntityTeam.PLAYER, 50, 50, 10, 1, viewportWidth, viewportHeight, demolitionistBehavior);
             characters.add(newCharacter);
         }
     }
