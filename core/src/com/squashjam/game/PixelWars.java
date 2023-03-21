@@ -39,6 +39,8 @@ public class PixelWars extends Game {
 		assetManager.load("grunt_attack.png", Texture.class);
 		assetManager.load("chicken_attack.png", Texture.class);
 		assetManager.load("chicken_idle.png", Texture.class);
+		assetManager.load("radial_circle.png", Texture.class);
+
 
 		// Load other assets as needed
 		assetManager.finishLoading(); // Blocks until all assets are loaded

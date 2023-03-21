@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -30,12 +31,13 @@ public class RenderScreen extends ScreenAdapter {
     private GrenadierBehavior grenadierBehavior;
 
     private GameUI gameUI;
-
+    private Texture foggyCircleTexture;
     private final PixelWars game;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Texture backgroundTexture;
     private List<Entity> characters;
+    private ShapeRenderer shapeRenderer;
 
     private Map<String, Integer> gold;
     BitmapFont font;
@@ -56,9 +58,11 @@ public class RenderScreen extends ScreenAdapter {
         scheduleCustomEnemySpawning();
         gold = new HashMap<>();
         gold.put("gold", 10000);
+        foggyCircleTexture = assetManager.get("radial_circle.png");
         scheduleGoldIncrement();
         inputHandler = new InputHandler(characters, assetManager);
         gameUI = new GameUI(camera, assetManager);
+        shapeRenderer = new ShapeRenderer();
     }
 
     private void initCameraAndViewport() {
@@ -126,23 +130,72 @@ public class RenderScreen extends ScreenAdapter {
 
         // Set the batch projection matrix
         game.batch.setProjectionMatrix(camera.combined);
-
         // Begin the batch
         game.batch.begin();
 
         // Draw the background
         drawTiledBackground(game.batch);
 
-        // Draw the UI squares
-        gameUI.draw(game.batch);
-
         // Draw characters
         for (Entity character : characters) {
             character.draw(game.batch);
         }
-
-        // End the batch
         game.batch.end();
+
+
+//         Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
+        shapeRenderer.end();
+
+
+        // draw characters
+        game.batch.begin();
+        for (Entity character : characters) {
+            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
+            if (!characterVisible) {
+                for (Entity player : characters) {
+                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
+                        characterVisible = true;
+                        break;
+                    }
+                }
+            }
+            if (characterVisible) {
+                character.draw(game.batch);
+            }
+        }
+        game.batch.end();
+
+
+
+        // Draw the foggy circles around each player entity
+        game.batch.begin();
+        game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        for (Entity character : characters) {
+            if (character.getTeam() == EntityTeam.PLAYER) {
+                float foggyCircleSize = 200; // Change the size to your desired value
+                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
+                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
+                game.batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
+            }
+        }
+        game.batch.end();
+
+
+        game.batch.begin();
+        game.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+        drawTiledBackground(game.batch);
+        game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        for (Entity character : characters) {
+            character.draw(game.batch);
+        }
+        gameUI.draw(game.batch);
+        game.batch.end();
+
+
     }
 
     @Override
@@ -164,6 +217,7 @@ public class RenderScreen extends ScreenAdapter {
             character.dispose();
         }
 
+        shapeRenderer.dispose();
         HealthBar.disposePixmap();
     }
 
@@ -206,6 +260,10 @@ public class RenderScreen extends ScreenAdapter {
         }
     }
 
+    private boolean isEntityInPlayerVisibility(Entity player, Entity other, float visibilityRadius) {
+        float distance = player.getPosition().dst(other.getPosition());
+        return distance <= visibilityRadius;
+    }
 
 }
 

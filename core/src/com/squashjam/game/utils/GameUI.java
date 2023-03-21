@@ -62,7 +62,7 @@ public class GameUI {
         float goldX = offsetX + 380;
         float goldY = offsetY + viewportHeight - 45;
 
-        font.setColor(Color.BLACK);
+        font.setColor(Color.WHITE); // Set the font color to white
         font.draw(batch, "Gold: " + gold.get("gold"), goldX, goldY);
     }
 
