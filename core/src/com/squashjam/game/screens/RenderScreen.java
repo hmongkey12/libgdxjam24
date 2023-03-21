@@ -144,32 +144,12 @@ public class RenderScreen extends ScreenAdapter {
         game.batch.end();
 
 
-//         Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
-        shapeRenderer.end();
+        // Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
+       drawDarkenedRectangle();
 
-
-
-
-        // draw characters
+        // draw visible characters
         game.batch.begin();
-        for (Entity character : characters) {
-            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
-            if (!characterVisible) {
-                for (Entity player : characters) {
-                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
-                        characterVisible = true;
-                        break;
-                    }
-                }
-            }
-            if (characterVisible) {
-                character.draw(game.batch);
-            }
-        }
+        drawVisibleCharacters(game.batch);
         game.batch.end();
 
 
@@ -268,6 +248,31 @@ public class RenderScreen extends ScreenAdapter {
                 batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
             }
         }
+    }
+
+    private void drawVisibleCharacters(SpriteBatch batch) {
+        for (Entity character : characters) {
+            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
+            if (!characterVisible) {
+                for (Entity player : characters) {
+                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
+                        characterVisible = true;
+                        break;
+                    }
+                }
+            }
+            if (characterVisible) {
+                character.draw(batch);
+            }
+        }
+    }
+
+    private void drawDarkenedRectangle() {
+//        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
+        shapeRenderer.end();
     }
 }
 
