@@ -10,21 +10,24 @@ import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.utils.AnimationUtils;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
+@Builder
 public class Entity {
     public Circle collisionCircle;
     public EntityType entityType;
-
     public EntityBehavior behavior;
-
 
     private HealthBar healthBar;
     private int maxHealth;
     public int viewportWidth;
     public int viewportHeight;
-
     public EntityTeam team;
     public EntityState state;
 
@@ -37,50 +40,14 @@ public class Entity {
     private boolean toBeRemoved;
 
     private int health;
-
     public float speed;
     public float attackRange;
     public int attackDamage;
     public float attackCooldown;
     public float attackTimer;
 
-
-    public Entity(EntityType entityType, Texture movingTexture, Texture idleTexture, Texture attackTexture,
-                  int frameCols, int frameRows, float frameDuration, Vector2 startPosition, int startHealth,
-                  EntityTeam team, float speed, float attackRange, int attackDamage, float attackCooldown, int viewportWidth, int viewportHeight, EntityBehavior behavior) {
-        // Initialize the position and health
-        this.position = startPosition;
-        this.health = startHealth;
-        this.entityType = entityType;
-        this.team = team; // assuming the constructor parameter is now of type CharacterTeam
-        this.state = EntityState.IDLE;
-        this.speed = speed;
-        this.attackRange = attackRange;
-        this.attackDamage = attackDamage;
-        this.attackCooldown = attackCooldown;
-        this.attackTimer = 0;
-        this.behavior = behavior;
-        // Set the viewport dimensions
-        this.viewportWidth = viewportWidth;
-        this.viewportHeight = viewportHeight;
-
-        // health
-        this.maxHealth = startHealth;
-        float characterWidth = viewportWidth * 0.1f;
-        float characterHeight = viewportHeight * 0.15f;
-        this.healthBar = new HealthBar(characterWidth, viewportHeight * 0.015f, new Vector2(position.x, position.y + characterHeight));
-
-
-        // Create animations
-        this.movingAnimation = AnimationUtils.createAnimation(movingTexture, frameCols, frameRows, frameDuration);
-        this.idleAnimation = AnimationUtils.createAnimation(idleTexture, frameCols, frameRows, frameDuration);
-        this.attackAnimation = AnimationUtils.createAnimation(attackTexture, frameCols, frameRows, frameDuration);
-
-
-        // Calculate the proportional radius
-        float radius = viewportWidth * 0.1f;
-        this.collisionCircle = new Circle(position.x, position.y, radius);
-    }
+    float characterWidth;
+    float characterHeight;
 
     public void update(float delta, List<Entity> otherEntities) {
         if (toBeRemoved) {
@@ -91,15 +58,7 @@ public class Entity {
         animationTime += delta;
 
         // health
-        healthBar.update((float) health / maxHealth, position);
-    }
-
-    public EntityTeam getTeam() {
-        return team;
-    }
-
-    public EntityType getEntityType() {
-        return entityType;
+        healthBar.update((float) health / maxHealth, new Vector2(position.x, position.y + characterHeight));
     }
 
     public void takeDamage(int damage) {
@@ -131,11 +90,20 @@ public class Entity {
         batch.draw(currentAnimation.getKeyFrame(animationTime, true), position.x, position.y, width, height);
 
         // Draw the health bar
+        System.out.println(health/maxHealth);
         healthBar.draw(batch, (float) health / maxHealth);
     }
 
-    public EntityBehavior getBehavior() {
-        return behavior;
+    public static Animation<TextureRegion> createMovingAnimation(Texture movingTexture, int frameCols, int frameRows, float frameDuration) {
+        return AnimationUtils.createAnimation(movingTexture, frameCols, frameRows, frameDuration);
+    }
+
+    public static Animation<TextureRegion> createIdleAnimation(Texture idleTexture, int frameCols, int frameRows, float frameDuration) {
+        return AnimationUtils.createAnimation(idleTexture, frameCols, frameRows, frameDuration);
+    }
+
+    public static Animation<TextureRegion> createAttackAnimation(Texture attackTexture, int frameCols, int frameRows, float frameDuration) {
+        return AnimationUtils.createAnimation(attackTexture, frameCols, frameRows, frameDuration);
     }
 
     public boolean isToBeRemoved() {
