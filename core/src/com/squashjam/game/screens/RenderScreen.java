@@ -121,14 +121,6 @@ public class RenderScreen extends ScreenAdapter {
 
         // Remove dead characters
         removeDeadCharacters();
-//        Iterator<Entity> iterator = characters.iterator();
-//        while (iterator.hasNext()) {
-//            Entity character = iterator.next();
-//            if (character.isToBeRemoved()) {
-//                character.dispose();
-//                iterator.remove();
-//            }
-//        }
 
         // Set the batch projection matrix
         game.batch.setProjectionMatrix(camera.combined);
