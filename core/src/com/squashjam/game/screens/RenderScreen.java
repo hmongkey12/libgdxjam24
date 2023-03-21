@@ -2,6 +2,7 @@ package com.squashjam.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,13 +15,12 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.squashjam.game.PixelWars;
 import com.squashjam.game.behaviors.GrenadierBehavior;
 import com.squashjam.game.entities.Entity;
+import com.squashjam.game.entities.HealthBar;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.EntityFactory;
 import com.squashjam.game.handlers.InputHandler;
-import com.squashjam.game.utils.AssetManagerUtil;
 import com.squashjam.game.utils.GameUI;
-import com.squashjam.game.utils.UiSquare;
 
 import java.util.*;
 
@@ -40,8 +40,7 @@ public class RenderScreen extends ScreenAdapter {
     private Map<String, Integer> gold;
     BitmapFont font;
     private InputHandler inputHandler;
-
-    private List<UiSquare> uiSquares;
+    private AssetManager assetManager;
 
     public RenderScreen(PixelWars game) {
         this.game = game;
@@ -50,17 +49,16 @@ public class RenderScreen extends ScreenAdapter {
     @Override
     public void show() {
         // Initialize camera, viewport, and background
+        this.assetManager = game.assetManager;
         initCameraAndViewport();
         initBackground();
         initCharacters();
-        initUiSquares();
         scheduleCustomEnemySpawning();
         gold = new HashMap<>();
         gold.put("gold", 10000);
         scheduleGoldIncrement();
-        inputHandler = new InputHandler(characters);
-        gameUI = new GameUI(camera);
-        inputHandler = new InputHandler(characters);
+        inputHandler = new InputHandler(characters, assetManager);
+        gameUI = new GameUI(camera, assetManager);
     }
 
     private void initCameraAndViewport() {
@@ -78,17 +76,8 @@ public class RenderScreen extends ScreenAdapter {
 
     private void initCharacters() {
         characters = new ArrayList<>();
-        Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.assetManager);
         characters.add(chicken);
-    }
-
-    private void initUiSquares() {
-        uiSquares = new ArrayList<>();
-        uiSquares.add(new UiSquare("uiSquare.png", 10, 10, 50, 50, "A"));
-        uiSquares.add(new UiSquare("uiSquare.png", 70, 10, 50, 50, "S"));
-        uiSquares.add(new UiSquare("uiSquare.png", 130, 10, 50, 50, "D"));
-        uiSquares.add(new UiSquare("uiSquare.png", 190, 10, 50, 50, "left"));
-        uiSquares.add(new UiSquare("uiSquare.png", 250, 10, 50, 50, "right"));
     }
 
     private void scheduleGoldIncrement() {
@@ -175,8 +164,7 @@ public class RenderScreen extends ScreenAdapter {
             character.dispose();
         }
 
-        // Dispose of AssetManager resources
-        AssetManagerUtil.dispose();
+        HealthBar.disposePixmap();
     }
 
     private void scheduleCustomEnemySpawning() {
@@ -191,7 +179,7 @@ public class RenderScreen extends ScreenAdapter {
             public void run() {
                 int viewportWidth = Gdx.graphics.getWidth();
                 int viewportHeight = Gdx.graphics.getHeight();
-                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, viewportWidth, viewportHeight);
+                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, viewportWidth, viewportHeight, game.assetManager);
                 if (entityType == EntityType.GRENADIER) {
                     grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
                 }

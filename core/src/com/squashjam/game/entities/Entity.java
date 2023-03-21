@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.squashjam.game.enums.EntityState;
@@ -22,7 +21,6 @@ import java.util.List;
 @Builder
 public class Entity {
     private Array<Texture> textures;
-    public Circle collisionCircle;
     public EntityType entityType;
     public EntityBehavior behavior;
 
@@ -47,9 +45,6 @@ public class Entity {
     public int attackDamage;
     public float attackCooldown;
     public float attackTimer;
-//
-//    float characterWidth;
-//    float characterHeight;
 
     public void update(float delta, List<Entity> otherEntities) {
         if (toBeRemoved) {
@@ -59,10 +54,7 @@ public class Entity {
         behavior.update(this, delta, otherEntities);
         animationTime += delta;
 
-        // health
-//        healthBar.update((float) health / maxHealth, new Vector2(position.x, position.y + characterHeight));
-
-        healthBar.update((float) health / maxHealth, new Vector2(position.x, position.y + entityHeight));
+        healthBar.update(new Vector2(position.x, position.y + entityHeight));
     }
 
     public void takeDamage(int damage) {

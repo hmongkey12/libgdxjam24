@@ -1,14 +1,13 @@
 package com.squashjam.game.behaviors;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.squashjam.game.entities.Entity;
 import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.HealthBarFactory;
-import com.squashjam.game.utils.AssetManagerUtil;
 import com.squashjam.game.utils.EntityUtils;
 
 import java.util.ArrayList;
@@ -18,6 +17,11 @@ public class GrenadierBehavior implements EntityBehavior {
     private List<Entity> pendingGrenades = new ArrayList<>();
     private float grenadeCooldownTimer = 0;
     private float grenadeCooldown = 3.0f; // set the grenade cooldown to 3 seconds
+    private AssetManager assetManager;
+
+    public GrenadierBehavior(AssetManager assetManager) {
+       this.assetManager = assetManager;
+    }
 
     @Override
     public void update(Entity entity, float delta, List<Entity> otherEntities) {
@@ -41,9 +45,9 @@ public class GrenadierBehavior implements EntityBehavior {
     }
 
     private void placeGrenade(Entity grenadier) {
-        Texture idleTexture = AssetManagerUtil.get().get("idle.png", Texture.class);
-        Texture movingTexture = AssetManagerUtil.get().get("moveleft.png", Texture.class);
-        Texture attackTexture = AssetManagerUtil.get().get("attack1.png", Texture.class);
+        Texture idleTexture = assetManager.get("idle.png", Texture.class);
+        Texture movingTexture = assetManager.get("moveleft.png", Texture.class);
+        Texture attackTexture = assetManager.get("attack1.png", Texture.class);
 
         int frameCols = 4;
         int frameRows = 2;
@@ -69,7 +73,6 @@ public class GrenadierBehavior implements EntityBehavior {
                 .team(grenadier.getTeam())
                 .state(EntityState.IDLE)
                 .speed(0)
-                .collisionCircle(new Circle())
                 .attackRange(attackRange)
                 .attackDamage(attackDamage)
                 .attackCooldown(attackCooldown)

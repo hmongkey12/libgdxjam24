@@ -1,5 +1,6 @@
 package com.squashjam.game.utils;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -13,8 +14,8 @@ public class UiSquare {
     private float height;
     private String label;
 
-    public UiSquare(String texturePath, float x, float y, float width, float height, String label) {
-        this.texture = AssetManagerUtil.get().get(texturePath, Texture.class);
+    public UiSquare(String texturePath, float x, float y, float width, float height, String label, AssetManager assetManager) {
+        this.texture = assetManager.get(texturePath, Texture.class);
         this.x = x;
         this.y = y;
         this.width = width;

@@ -1,5 +1,6 @@
 package com.squashjam.game.utils;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,15 +13,17 @@ import java.util.Map;
 
 public class GameUI {
     private List<UiSquare> uiSquares;
-    private BitmapFont font;
-    private Map<String, Integer> gold;
+    private final BitmapFont font;
+    private final Map<String, Integer> gold;
     private float offsetX;
     private float offsetY;
 
     private float viewportHeight;
+    private AssetManager assetManager;
 
 
-    public GameUI(OrthographicCamera camera) {
+    public GameUI(OrthographicCamera camera, AssetManager assetManager) {
+        this.assetManager = assetManager;
         offsetX = camera.position.x - camera.viewportWidth / 2;
         offsetY = camera.position.y - camera.viewportHeight / 2;
         viewportHeight = camera.viewportHeight;
@@ -32,11 +35,11 @@ public class GameUI {
 
     private void initUiSquares() {
         uiSquares = new ArrayList<>();
-        uiSquares.add(new UiSquare("uiSquare.png", 10, 10, 50, 50, "A"));
-        uiSquares.add(new UiSquare("uiSquare.png", 70, 10, 50, 50, "S"));
-        uiSquares.add(new UiSquare("uiSquare.png", 130, 10, 50, 50, "D"));
-        uiSquares.add(new UiSquare("uiSquare.png", 190, 10, 50, 50, "left"));
-        uiSquares.add(new UiSquare("uiSquare.png", 250, 10, 50, 50, "right"));
+        uiSquares.add(new UiSquare("uiSquare.png", 10, 10, 50, 50, "A", assetManager));
+        uiSquares.add(new UiSquare("uiSquare.png", 70, 10, 50, 50, "S", assetManager));
+        uiSquares.add(new UiSquare("uiSquare.png", 130, 10, 50, 50, "D", assetManager));
+        uiSquares.add(new UiSquare("uiSquare.png", 190, 10, 50, 50, "left", assetManager));
+        uiSquares.add(new UiSquare("uiSquare.png", 250, 10, 50, 50, "right", assetManager));
     }
 
     public void updatePositions(OrthographicCamera camera) {

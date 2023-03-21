@@ -1,5 +1,6 @@
 package com.squashjam.game.utils;
 
+import com.badlogic.gdx.math.Vector2;
 import com.squashjam.game.entities.Entity;
 import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
@@ -9,11 +10,17 @@ import java.util.List;
 
 public class EntityUtils {
 
+    public static boolean overlap(Vector2 position1, float width1, float height1, Vector2 position2, float width2, float height2) {
+        return position1.x < position2.x + width2 &&
+                position1.x + width1 > position2.x &&
+                position1.y < position2.y + height2 &&
+                position1.y + height1 > position2.y;
+    }
+
     public static boolean isInAttackRange(Entity entity, List<Entity> otherEntities) {
         for (Entity other : otherEntities) {
             if (entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other)) {
-                float distance = entity.position.dst(other.position);
-                if (distance <= entity.attackRange) {
+                if (overlap(entity.position, entity.getEntityWidth(), entity.getEntityHeight(), other.position, other.getEntityWidth(), other.getEntityHeight())) {
                     return true;
                 }
             }
@@ -28,8 +35,7 @@ public class EntityUtils {
             boolean attackedOneTarget = false;
             for (Entity other : otherEntities) {
                 if (entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other)) {
-                    float distance = entity.position.dst(other.position);
-                    if (distance <= entity.attackRange) {
+                    if (overlap(entity.position, entity.getEntityWidth(), entity.getEntityHeight(), other.position, other.getEntityWidth(), other.getEntityHeight())) {
                         other.takeDamage(entity.attackDamage);
                         // Check if the entity is not DEMOLITIONIST and has already attacked one target
                         if (entity.getEntityType() != EntityType.DEMOLITIONIST && attackedOneTarget) {
@@ -52,9 +58,9 @@ public class EntityUtils {
     public static void updateMovement(Entity entity, float delta) {
         float dx = (entity.team == EntityTeam.PLAYER ? 1 : -1) * entity.speed * delta;
         entity.position.x += dx;
-        entity.collisionCircle.setPosition(entity.position.x, entity.position.y);
         entity.state = EntityState.MOVING;
     }
 }
+
 
 

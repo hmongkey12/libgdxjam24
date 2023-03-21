@@ -2,7 +2,6 @@ package com.squashjam.game.factories;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.squashjam.game.behaviors.*;
@@ -11,26 +10,25 @@ import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
-import com.squashjam.game.utils.AssetManagerUtil;
 
 public class EntityFactory {
 
-    public static Entity createEntity(EntityType entityType, EntityTeam team, int viewportWidth, int viewportHeight) {
+    public static Entity createEntity(EntityType entityType, EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         switch (entityType) {
             case ABOMINATION:
-                return createAbomination(team, viewportWidth, viewportHeight);
+                return createAbomination(team, viewportWidth, viewportHeight, assetManager);
             case DRONE:
-                return createDrone(team, viewportWidth, viewportHeight);
+                return createDrone(team, viewportWidth, viewportHeight, assetManager);
             case GRENADIER:
-                return createGrenadier(team, viewportWidth, viewportHeight);
+                return createGrenadier(team, viewportWidth, viewportHeight, assetManager);
             case CHICKEN:
-                return createChickenCharacter(team, viewportWidth, viewportHeight);
+                return createChickenCharacter(team, viewportWidth, viewportHeight, assetManager);
             case GRUNT:
-                return createGrunt(team, viewportWidth, viewportHeight);
+                return createGrunt(team, viewportWidth, viewportHeight, assetManager);
             case SNIPER:
-                return createSniper(team, viewportWidth, viewportHeight);
+                return createSniper(team, viewportWidth, viewportHeight, assetManager);
             case DEMOLITIONIST:
-                return createDemolitionist(team, viewportWidth, viewportHeight);
+                return createDemolitionist(team, viewportWidth, viewportHeight, assetManager);
             default:
                 throw new IllegalArgumentException("Unsupported enemy type: " + entityType);
         }
@@ -42,6 +40,7 @@ public class EntityFactory {
         Texture attackTexture = textures.get(2);
         float entityWidth = viewportWidth * 0.1f;
         float entityHeight = viewportHeight * 0.15f;
+
 
         return Entity.builder()
                 .entityType(entityType)
@@ -55,7 +54,6 @@ public class EntityFactory {
                 .team(team)
                 .state(EntityState.IDLE)
                 .speed(speed)
-                .collisionCircle(new Circle())
                 .attackRange(attackRange)
                 .attackDamage(attackDamage)
                 .attackCooldown(attackCooldown)
@@ -66,50 +64,49 @@ public class EntityFactory {
                 .build();
     }
 
-    private static Entity createAbomination(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createAbomination(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"abomination_walk.png", "idle.png", "abomination_attack.png"};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.ABOMINATION, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 800, 800, 20, 50, 50, 2f, new AbominationBehavior(), textures, 4, 2, 0.2f);
     }
 
-    private static Entity createDrone(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createDrone(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"moveleft.png", "idle.png", "attack1.png"};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.DRONE, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 100, 100, 150, 50, 10, 0.5f, new DroneBehavior(), textures, 4, 2, 0.2f);
     }
 
-    private static Entity createGrenadier(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createGrenadier(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"moveleft.png", "idle.png", "attack1.png",};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
-        return createBasicEntity(EntityType.GRENADIER, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 100, 100, 50, 50, 100, 2f, new GrenadierBehavior(), textures, 4, 2, 0.2f);
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
+        return createBasicEntity(EntityType.GRENADIER, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 100, 100, 50, 50, 100, 2f, new GrenadierBehavior(assetManager), textures, 4, 2, 0.2f);
     }
 
-    public static Entity createChickenCharacter(EntityTeam team, int viewportWidth, int viewportHeight) {
+    public static Entity createChickenCharacter(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"moveleft.png", "chicken_idle.png", "chicken_attack.png"};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.CHICKEN, team, viewportWidth, viewportHeight, new Vector2(10, 0), 1000, 1000, 0, 50, 100, 1f, new ChickenBehavior(), textures, 4, 2, 0.1f);
     }
 
-    private static Entity createGrunt(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createGrunt(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"grunt_walk.png", "idle.png", "grunt_attack.png"};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.GRUNT, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new GruntBehavior(), textures, 4, 2, 0.1f);
     }
 
-    private static Entity createSniper(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createSniper(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"sniper_walk.png", "idle.png", "sniper_attack.png"};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.SNIPER, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 300, 10, 1f, new SniperBehavior(), textures, 4, 2, 0.1f);
     }
 
-    private static Entity createDemolitionist(EntityTeam team, int viewportWidth, int viewportHeight) {
+    private static Entity createDemolitionist(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"moveright.png", "idle.png", "attack1.png",};
-        Array<Texture> textures = Array.with(loadTextures(texturePaths));
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         return createBasicEntity(EntityType.DEMOLITIONIST, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new DemolitionistBehavior(), textures, 4, 2, 0.1f);
     }
 
-    private static Texture[] loadTextures(String[] texturePaths) {
-        AssetManager assetManager = AssetManagerUtil.get();
+    private static Texture[] loadTextures(String[] texturePaths, AssetManager assetManager) {
         Texture[] textures = new Texture[texturePaths.length];
         for (int i = 0; i < texturePaths.length; i++) {
             textures[i] = assetManager.get(texturePaths[i], Texture.class);
