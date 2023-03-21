@@ -2,6 +2,7 @@ package com.squashjam.game.behaviors;
 
 import com.squashjam.game.entities.Entity;
 import com.squashjam.game.entities.EntityBehavior;
+import com.squashjam.game.utils.EntityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class GrenadeBehavior implements EntityBehavior {
 
         // Check for new targets within range
         for (Entity other : otherEntities) {
-            if (entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.collisionCircle.overlaps(other.collisionCircle)) {
+            if (entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && EntityUtils.overlap(entity.position, entity.getEntityWidth(), entity.getEntityHeight(), other.position, other.getEntityWidth(), other.getEntityHeight())) {
                 if (!targetsInRange.contains(other)) {
                     targetsInRange.add(other);
                 }
@@ -41,9 +42,10 @@ public class GrenadeBehavior implements EntityBehavior {
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
-        return false;
+        return EntityUtils.overlap(attacker.position, attacker.getEntityWidth(), attacker.getEntityHeight(), target.position, target.getEntityWidth(), target.getEntityHeight());
     }
 }
+
 
 
 

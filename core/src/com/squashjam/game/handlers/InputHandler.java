@@ -2,8 +2,8 @@ package com.squashjam.game.handlers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.squashjam.game.entities.Entity;
@@ -18,13 +18,12 @@ import java.util.Map;
 public class InputHandler {
     private List<Entity> characters;
     private Map<Integer, Float> lastKeyPressTimes;
-
-    private Texture movingTexture;
-    private Texture idleTexture;
-    private Texture attackTexture;
     private static final float DEBOUNCE_TIME = 0.2f;
 
-    public InputHandler(List<Entity> characters) {
+    AssetManager assetManager;
+
+    public InputHandler(List<Entity> characters, AssetManager assetManager) {
+        this.assetManager = assetManager;
         this.characters = characters;
 
         // Initialize last key press times to current time
@@ -50,10 +49,10 @@ public class InputHandler {
 
     private void updateCameraPosition(OrthographicCamera camera, float delta) {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            camera.position.x -= 100 * delta;
+            camera.position.x -= 200 * delta;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            camera.position.x += 100 * delta;
+            camera.position.x += 200 * delta;
         }
         float halfViewportWidth = camera.viewportWidth / 2f;
         float maxX = 1600 - halfViewportWidth;
@@ -80,7 +79,7 @@ public class InputHandler {
         int localGold = gold.get("gold");
         if (localGold >= 100) {
             gold.put("gold", localGold - 100);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
             characters.add(newCharacter);
         }
     }
@@ -90,7 +89,7 @@ public class InputHandler {
         int sniperCost = 200; // Twice the gold cost of a Grunt Entity
         if (localGold >= sniperCost) {
             gold.put("gold", localGold - sniperCost);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
             characters.add(newCharacter);
         }
     }
@@ -100,7 +99,7 @@ public class InputHandler {
         int demolitionistCost = 300; // Three times the gold cost of a Grunt Entity
         if (localGold >= demolitionistCost) {
             gold.put("gold", localGold - demolitionistCost);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight);
+            Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
             characters.add(newCharacter);
         }
     }

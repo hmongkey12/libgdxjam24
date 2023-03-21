@@ -13,6 +13,11 @@ public class HealthBar {
 
     private Texture backgroundTexture;
     private Texture foregroundTexture;
+    private static Pixmap pixmap;
+
+    static {
+        pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    }
 
     public HealthBar(float width, float height, Vector2 position) {
         this.width = width;
@@ -24,15 +29,13 @@ public class HealthBar {
     }
 
     private Texture createTexture(Color color) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);
         pixmap.fill();
         Texture texture = new Texture(pixmap);
-        pixmap.dispose();
         return texture;
     }
 
-    public void update(float healthPercentage, Vector2 characterPosition) {
+    public void update(Vector2 characterPosition) {
         this.position.set(characterPosition.x, characterPosition.y + height);
     }
 
@@ -45,6 +48,13 @@ public class HealthBar {
     public void dispose() {
         backgroundTexture.dispose();
         foregroundTexture.dispose();
+    }
+
+    public static void disposePixmap() {
+        if (pixmap != null) {
+            pixmap.dispose();
+            pixmap = null;
+        }
     }
 }
 
