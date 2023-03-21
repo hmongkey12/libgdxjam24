@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -143,47 +144,19 @@ public class RenderScreen extends ScreenAdapter {
         game.batch.end();
 
 
-//         Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
-        shapeRenderer.end();
+        // Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
+       drawDarkenedRectangle();
 
-
-        // draw characters
+        // draw visible characters
         game.batch.begin();
-        for (Entity character : characters) {
-            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
-            if (!characterVisible) {
-                for (Entity player : characters) {
-                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
-                        characterVisible = true;
-                        break;
-                    }
-                }
-            }
-            if (characterVisible) {
-                character.draw(game.batch);
-            }
-        }
+        drawVisibleCharacters(game.batch);
         game.batch.end();
-
 
 
         // Draw the foggy circles around each player entity
         game.batch.begin();
-        game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        for (Entity character : characters) {
-            if (character.getTeam() == EntityTeam.PLAYER) {
-                float foggyCircleSize = 200; // Change the size to your desired value
-                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
-                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
-                game.batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
-            }
-        }
+        drawFoggyCircles(game.batch);
         game.batch.end();
-
 
         game.batch.begin();
         game.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
@@ -265,6 +238,42 @@ public class RenderScreen extends ScreenAdapter {
         return distance <= visibilityRadius;
     }
 
+    private void drawFoggyCircles(SpriteBatch batch) {
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        for (Entity character : characters) {
+            if (character.getTeam() == EntityTeam.PLAYER) {
+                float foggyCircleSize = 200; // Change the size to your desired value
+                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
+                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
+                batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
+            }
+        }
+    }
+
+    private void drawVisibleCharacters(SpriteBatch batch) {
+        for (Entity character : characters) {
+            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
+            if (!characterVisible) {
+                for (Entity player : characters) {
+                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
+                        characterVisible = true;
+                        break;
+                    }
+                }
+            }
+            if (characterVisible) {
+                character.draw(batch);
+            }
+        }
+    }
+
+    private void drawDarkenedRectangle() {
+//        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
+        shapeRenderer.end();
+    }
 }
 
 
