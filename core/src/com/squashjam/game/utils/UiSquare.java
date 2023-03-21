@@ -30,7 +30,7 @@ public class UiSquare {
 
     public void draw(Batch batch, BitmapFont font) {
         batch.draw(texture, x, y, width, height);
-        font.setColor(Color.BLACK);
+        font.setColor(Color.WHITE);
         float labelX = x + width / 2 - font.getXHeight() / 2;
         float labelY = y + height / 2 + font.getXHeight() / 2;
         font.draw(batch, label, labelX, labelY);
