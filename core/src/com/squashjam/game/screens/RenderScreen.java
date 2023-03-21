@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -151,6 +152,8 @@ public class RenderScreen extends ScreenAdapter {
         shapeRenderer.end();
 
 
+
+
         // draw characters
         game.batch.begin();
         for (Entity character : characters) {
@@ -170,20 +173,10 @@ public class RenderScreen extends ScreenAdapter {
         game.batch.end();
 
 
-
         // Draw the foggy circles around each player entity
         game.batch.begin();
-        game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        for (Entity character : characters) {
-            if (character.getTeam() == EntityTeam.PLAYER) {
-                float foggyCircleSize = 200; // Change the size to your desired value
-                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
-                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
-                game.batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
-            }
-        }
+        drawFoggyCircles(game.batch);
         game.batch.end();
-
 
         game.batch.begin();
         game.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
@@ -265,6 +258,17 @@ public class RenderScreen extends ScreenAdapter {
         return distance <= visibilityRadius;
     }
 
+    private void drawFoggyCircles(SpriteBatch batch) {
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        for (Entity character : characters) {
+            if (character.getTeam() == EntityTeam.PLAYER) {
+                float foggyCircleSize = 200; // Change the size to your desired value
+                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
+                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
+                batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
+            }
+        }
+    }
 }
 
 
