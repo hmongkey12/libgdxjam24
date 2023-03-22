@@ -35,7 +35,7 @@ public class Entity {
     private final Animation<TextureRegion> movingAnimation;
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> attackAnimation;
-    private float animationTime = 0;
+    private float animationTime;
     public Vector2 position;
 
     private boolean toBeRemoved;
@@ -45,7 +45,7 @@ public class Entity {
     public float attackRange;
     public int attackDamage;
     public float attackCooldown;
-    public float attackTimer;
+    private float attackTimer;
 
     public void update(float delta, List<Entity> otherEntities) {
         if (toBeRemoved) {
@@ -60,9 +60,7 @@ public class Entity {
 
     public void takeDamage(int damage) {
         this.health -= damage;
-        if (this.health <= 0) {
-            toBeRemoved = true;
-        }
+        toBeRemoved = (this.health <= 0);
     }
 
     public void draw(Batch batch) {
