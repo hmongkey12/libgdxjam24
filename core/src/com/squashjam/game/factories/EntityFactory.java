@@ -11,6 +11,8 @@ import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 
+import java.util.Arrays;
+
 public class EntityFactory {
 
     public static Entity createEntity(EntityType entityType, EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
@@ -68,7 +70,7 @@ public class EntityFactory {
     private static Entity createAbomination(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"abomination_walk.png", "idle.png", "abomination_attack.png"};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
-        return createBasicEntity(EntityType.ABOMINATION, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 800, 800, 20, 50, 50, 2f, new AbominationBehavior(), textures, 4, 2, 0.2f, 100);
+        return createBasicEntity(EntityType.ABOMINATION, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 800, 800, 80, 50, 50, 2f, new AbominationBehavior(), textures, 4, 2, 0.2f, 100);
     }
 
     private static Entity createDrone(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
@@ -107,11 +109,17 @@ public class EntityFactory {
         return createBasicEntity(EntityType.DEMOLITIONIST, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new DemolitionistBehavior(), textures, 4, 2, 0.1f, 200);
     }
 
+//    private static Texture[] loadTextures(String[] texturePaths, AssetManager assetManager) {
+//        Texture[] textures = new Texture[texturePaths.length];
+//        for (int i = 0; i < texturePaths.length; i++) {
+//            textures[i] = assetManager.get(texturePaths[i], Texture.class);
+//        }
+//        return textures;
+//    }
+
     private static Texture[] loadTextures(String[] texturePaths, AssetManager assetManager) {
-        Texture[] textures = new Texture[texturePaths.length];
-        for (int i = 0; i < texturePaths.length; i++) {
-            textures[i] = assetManager.get(texturePaths[i], Texture.class);
-        }
-        return textures;
+        return Arrays.stream(texturePaths)
+                .map(assetManager::get)
+                .toArray(Texture[]::new);
     }
 }

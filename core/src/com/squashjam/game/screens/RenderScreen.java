@@ -170,8 +170,8 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private void scheduleCustomEnemySpawning() {
-//        scheduleEnemySpawning(EntityType.ABOMINATION, 15); // Spawn Abomination every 5 seconds
-//        scheduleEnemySpawning(EntityType.DRONE, 5); // Spawn Grunt every 10 seconds
+        scheduleEnemySpawning(EntityType.ABOMINATION, 5); // Spawn Abomination every 5 seconds
+        scheduleEnemySpawning(EntityType.DRONE, 5); // Spawn Grunt every 10 seconds
         scheduleEnemySpawning(EntityType.GRENADIER, 12);
     }
 
@@ -250,7 +250,7 @@ public class RenderScreen extends ScreenAdapter {
             return true;
         }
         for (Entity character : characters) {
-            if (character.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(character, enemy, character.getEntitySight())) {
+            if (character.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(character, enemy, character.getEntitySight()/2)) {
                 return true;
             }
         }
