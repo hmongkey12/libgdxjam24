@@ -109,14 +109,6 @@ public class EntityFactory {
         return createBasicEntity(EntityType.DEMOLITIONIST, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new DemolitionistBehavior(), textures, 4, 2, 0.1f, 200);
     }
 
-//    private static Texture[] loadTextures(String[] texturePaths, AssetManager assetManager) {
-//        Texture[] textures = new Texture[texturePaths.length];
-//        for (int i = 0; i < texturePaths.length; i++) {
-//            textures[i] = assetManager.get(texturePaths[i], Texture.class);
-//        }
-//        return textures;
-//    }
-
     private static Texture[] loadTextures(String[] texturePaths, AssetManager assetManager) {
         return Arrays.stream(texturePaths)
                 .map(assetManager::get)
