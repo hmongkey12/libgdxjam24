@@ -256,7 +256,6 @@ public class RenderScreen extends ScreenAdapter {
         }
         return false;
     }
-
 }
 
 
