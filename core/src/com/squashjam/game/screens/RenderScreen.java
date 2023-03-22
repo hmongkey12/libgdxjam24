@@ -25,6 +25,7 @@ import com.squashjam.game.handlers.InputHandler;
 import com.squashjam.game.utils.GameUI;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 
 public class RenderScreen extends ScreenAdapter {
@@ -126,25 +127,13 @@ public class RenderScreen extends ScreenAdapter {
         game.batch.setProjectionMatrix(camera.combined);
         // Begin the batch
         game.batch.begin();
-
         // Draw the background
         drawTiledBackground(game.batch);
-
-        // Draw characters
-        for (Entity character : characters) {
-            character.draw(game.batch);
-        }
         game.batch.end();
 
 
         // Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
        drawDarkenedRectangle();
-
-        // draw visible characters
-        game.batch.begin();
-        drawVisibleCharacters(game.batch);
-        game.batch.end();
-
 
         // Draw the foggy circles around each player entity
         game.batch.begin();
@@ -156,33 +145,26 @@ public class RenderScreen extends ScreenAdapter {
         drawTiledBackground(game.batch);
         game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         for (Entity character : characters) {
-            character.draw(game.batch);
+            if (isVisible(character)) {
+                character.draw(game.batch);
+            }
         }
         gameUI.draw(game.batch);
         game.batch.end();
-
-
     }
 
     @Override
     public void resize(int width, int height) {
-        // Update the viewport
         viewport.update(width, height);
     }
+
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
         font.dispose();
-
-        // Dispose of GameUI resources
         gameUI.dispose();
-
-        // Dispose of the characters
-        for (Entity character : characters) {
-            character.dispose();
-        }
-
+        characters.forEach(Entity::dispose);
         shapeRenderer.dispose();
         HealthBar.disposePixmap();
     }
@@ -208,6 +190,8 @@ public class RenderScreen extends ScreenAdapter {
         }, 0, interval);
     }
 
+
+
     private void drawTiledBackground(Batch batch) {
         float backgroundWidth = backgroundTexture.getWidth();
         float backgroundHeight = backgroundTexture.getHeight();
@@ -217,13 +201,13 @@ public class RenderScreen extends ScreenAdapter {
         float startX = camera.position.x - camera.viewportWidth / 2;
         float startY = camera.position.y - camera.viewportHeight / 2;
 
-        for (int i = 0; i < horizontalTiles; i++) {
-            for (int j = 0; j < verticalTiles; j++) {
-                float x = startX + i * backgroundWidth - startX % backgroundWidth;
-                float y = startY + j * backgroundHeight - startY % backgroundHeight;
-                batch.draw(backgroundTexture, x, y);
-            }
-        }
+        IntStream.range(0, horizontalTiles)
+                .forEach(i -> IntStream.range(0, verticalTiles)
+                        .forEach(j -> {
+                            float x = startX + i * backgroundWidth - startX % backgroundWidth;
+                            float y = startY + j * backgroundHeight - startY % backgroundHeight;
+                            batch.draw(backgroundTexture, x, y);
+                        }));
     }
 
     private boolean isEntityInPlayerVisibility(Entity player, Entity other, float visibilityRadius) {
@@ -233,35 +217,17 @@ public class RenderScreen extends ScreenAdapter {
 
     private void drawFoggyCircles(SpriteBatch batch) {
         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        for (Entity character : characters) {
-            if (character.getTeam() == EntityTeam.PLAYER) {
-                float foggyCircleSize = 200; // Change the size to your desired value
-                float foggyCircleX = character.getPosition().x - foggyCircleSize / 2;
-                float foggyCircleY = character.getPosition().y - foggyCircleSize / 2;
-                batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
-            }
-        }
-    }
-
-    private void drawVisibleCharacters(SpriteBatch batch) {
-        for (Entity character : characters) {
-            boolean characterVisible = character.getTeam() == EntityTeam.PLAYER;
-            if (!characterVisible) {
-                for (Entity player : characters) {
-                    if (player.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(player, character, 100)) {
-                        characterVisible = true;
-                        break;
-                    }
-                }
-            }
-            if (characterVisible) {
-                character.draw(batch);
-            }
-        }
+        characters.stream()
+                .filter(c -> c.getTeam() == EntityTeam.PLAYER)
+                .forEach(c -> {
+                    float foggyCircleSize = c.getEntitySight();
+                    float foggyCircleX = c.getPosition().x - foggyCircleSize / 2;
+                    float foggyCircleY = c.getPosition().y - foggyCircleSize / 2;
+                    batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
+                });
     }
 
     private void drawDarkenedRectangle() {
-//        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
@@ -278,6 +244,19 @@ public class RenderScreen extends ScreenAdapter {
             }
         }
     }
+
+    private boolean isVisible(Entity enemy) {
+        if (enemy.getTeam() == EntityTeam.PLAYER) {
+            return true;
+        }
+        for (Entity character : characters) {
+            if (character.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(character, enemy, character.getEntitySight())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 

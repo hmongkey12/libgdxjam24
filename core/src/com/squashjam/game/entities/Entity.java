@@ -20,6 +20,7 @@ import java.util.List;
 @Setter
 @Builder
 public class Entity {
+    public float entitySight;
     private Array<Texture> textures;
     public EntityType entityType;
     public EntityBehavior behavior;
