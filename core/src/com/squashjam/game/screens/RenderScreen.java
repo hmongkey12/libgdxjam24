@@ -163,6 +163,11 @@ public class RenderScreen extends ScreenAdapter {
         HealthBar.disposePixmap();
     }
 
+    @Override
+    public void hide() {
+        dispose();
+    }
+
     private void scheduleCustomEnemySpawning() {
         scheduleEnemySpawning(EntityType.ABOMINATION, 5);
         scheduleEnemySpawning(EntityType.DRONE, 5);

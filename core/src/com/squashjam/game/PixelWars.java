@@ -2,8 +2,10 @@ package com.squashjam.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.squashjam.game.screens.IntroScreen;
 import com.squashjam.game.screens.RenderScreen;
 
 public class PixelWars extends Game {
@@ -15,7 +17,8 @@ public class PixelWars extends Game {
 		batch = new SpriteBatch();
 		assetManager = new AssetManager();
 		loadAssets();
-		setScreen(new RenderScreen(this));
+		setScreen(new IntroScreen(this));
+//		setScreen(new RenderScreen(this));
 	}
 
 	@Override
@@ -40,7 +43,11 @@ public class PixelWars extends Game {
 		assetManager.load("chicken_attack.png", Texture.class);
 		assetManager.load("chicken_idle.png", Texture.class);
 		assetManager.load("radial_circle.png", Texture.class);
-
+		assetManager.load("intro.mp3", Music.class);
+		assetManager.load("war1.png", Texture.class);
+		assetManager.load("war2.png", Texture.class);
+//		assetManager.load("war3.png", Texture.class);
+		assetManager.load("pixelwars.png", Texture.class);
 
 		// Load other assets as needed
 		assetManager.finishLoading(); // Blocks until all assets are loaded
