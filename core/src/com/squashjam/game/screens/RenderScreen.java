@@ -131,9 +131,8 @@ public class RenderScreen extends ScreenAdapter {
         drawTiledBackground(game.batch);
         game.batch.end();
 
-
         // Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
-       drawDarkenedRectangle();
+        drawDarkenedRectangle();
 
         // Draw the foggy circles around each player entity
         game.batch.begin();
@@ -144,11 +143,7 @@ public class RenderScreen extends ScreenAdapter {
         game.batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
         drawTiledBackground(game.batch);
         game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        for (Entity character : characters) {
-            if (isVisible(character)) {
-                character.draw(game.batch);
-            }
-        }
+        drawVisibleEntities(game.batch);
         gameUI.draw(game.batch);
         game.batch.end();
     }
@@ -157,7 +152,6 @@ public class RenderScreen extends ScreenAdapter {
     public void resize(int width, int height) {
         viewport.update(width, height);
     }
-
 
     @Override
     public void dispose() {
@@ -170,8 +164,8 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private void scheduleCustomEnemySpawning() {
-        scheduleEnemySpawning(EntityType.ABOMINATION, 5); // Spawn Abomination every 5 seconds
-        scheduleEnemySpawning(EntityType.DRONE, 5); // Spawn Grunt every 10 seconds
+        scheduleEnemySpawning(EntityType.ABOMINATION, 5);
+        scheduleEnemySpawning(EntityType.DRONE, 5);
         scheduleEnemySpawning(EntityType.GRENADIER, 12);
     }
 
@@ -189,8 +183,6 @@ public class RenderScreen extends ScreenAdapter {
             }
         }, 0, interval);
     }
-
-
 
     private void drawTiledBackground(Batch batch) {
         float backgroundWidth = backgroundTexture.getWidth();
@@ -246,15 +238,18 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private boolean isVisible(Entity enemy) {
-        if (enemy.getTeam() == EntityTeam.PLAYER) {
-            return true;
-        }
+        return enemy.getTeam() == EntityTeam.PLAYER ||
+                characters.stream()
+                        .filter(character -> character.getTeam() == EntityTeam.PLAYER)
+                        .anyMatch(character -> isEntityInPlayerVisibility(character, enemy, character.getEntitySight() / 2));
+    }
+
+    private void drawVisibleEntities(SpriteBatch batch) {
         for (Entity character : characters) {
-            if (character.getTeam() == EntityTeam.PLAYER && isEntityInPlayerVisibility(character, enemy, character.getEntitySight()/2)) {
-                return true;
+            if (isVisible(character)) {
+                character.draw(batch);
             }
         }
-        return false;
     }
 }
 
