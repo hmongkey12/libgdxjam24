@@ -45,11 +45,11 @@ public class GrenadierBehavior implements EntityBehavior {
     }
 
     private void placeGrenade(Entity grenadier) {
-        Texture idleTexture = assetManager.get("idle.png", Texture.class);
-        Texture movingTexture = assetManager.get("moveleft.png", Texture.class);
-        Texture attackTexture = assetManager.get("attack1.png", Texture.class);
+        Texture idleTexture = assetManager.get("grenade_idle.png", Texture.class);
+        Texture movingTexture = assetManager.get("grenade_move.png", Texture.class);
+        Texture attackTexture = assetManager.get("grenade_attack.png", Texture.class);
 
-        int frameCols = 4;
+        int frameCols = 3;
         int frameRows = 2;
         float frameDuration = 0.1f;
 
@@ -64,8 +64,8 @@ public class GrenadierBehavior implements EntityBehavior {
 
         Entity grenade = Entity.builder()
                 .entityType(EntityType.GRENADE)
-                .movingAnimation(Entity.createMovingAnimation(movingTexture, frameCols, frameRows, frameDuration))
-                .idleAnimation(Entity.createIdleAnimation(idleTexture, frameCols, frameRows, frameDuration))
+                .movingAnimation(Entity.createMovingAnimation(movingTexture, 1, 1, frameDuration))
+                .idleAnimation(Entity.createIdleAnimation(idleTexture, 1, 1, frameDuration))
                 .attackAnimation(Entity.createAttackAnimation(attackTexture, frameCols, frameRows, frameDuration))
                 .position(grenadePosition)
                 .health(grenadeHealth)

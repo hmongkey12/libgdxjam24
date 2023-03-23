@@ -95,6 +95,7 @@ public class IntroScreen extends ScreenAdapter {
 
     private void skipIntro() {
         introMusic.stop();
+        Gdx.input.setInputProcessor(null);
         game.setScreen(new RenderScreen(game));
         dispose();
     }

@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.squashjam.game.PixelWars;
 import com.squashjam.game.behaviors.GrenadierBehavior;
 import com.squashjam.game.entities.Entity;
-import com.squashjam.game.entities.HealthBar;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.EntityFactory;
@@ -103,8 +102,14 @@ public class RenderScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+
         // Clear the screen
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (characters.stream().filter(character -> character.getEntityType().equals(EntityType.CHICKEN)).count() < 1) {
+            game.setScreen(new DefeatOutroScreen(game));
+        }
 
         // Handle input
         inputHandler.handleInput(camera, delta, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), gold);
@@ -159,8 +164,6 @@ public class RenderScreen extends ScreenAdapter {
         font.dispose();
         gameUI.dispose();
         characters.forEach(Entity::dispose);
-        shapeRenderer.dispose();
-        HealthBar.disposePixmap();
     }
 
     @Override
