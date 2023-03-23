@@ -5,7 +5,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class HealthBar {
     private float width;
     private float height;

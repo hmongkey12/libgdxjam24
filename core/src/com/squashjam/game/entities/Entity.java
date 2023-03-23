@@ -1,5 +1,6 @@
 package com.squashjam.game.entities;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -21,10 +22,11 @@ import java.util.List;
 @Builder
 public class Entity {
     public float entitySight;
+    private Sound attackSound;
+
     private Array<Texture> textures;
     public EntityType entityType;
     public EntityBehavior behavior;
-
     private HealthBar healthBar;
     private int maxHealth;
     private float entityWidth;

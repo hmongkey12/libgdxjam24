@@ -3,6 +3,7 @@ package com.squashjam.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.squashjam.game.entities.HealthBar;
@@ -62,9 +63,17 @@ public class PixelWars extends Game {
 		assetManager.load("grenade_move.png", Texture.class);
 		assetManager.load("intro.mp3", Music.class);
 		assetManager.load("defeat.mp3", Music.class);
+		assetManager.load("punch.mp3", Sound.class);
+		assetManager.load("shoot.mp3", Sound.class);
+		assetManager.load("plant.mp3", Sound.class);
+		assetManager.load("freeze.mp3", Sound.class);
+		assetManager.load("explode.mp3", Sound.class);
+		assetManager.load("slash.mp3", Sound.class);
 		assetManager.load("victory.mp3", Music.class);
 		assetManager.load("war1.png", Texture.class);
 		assetManager.load("war2.png", Texture.class);
+		assetManager.load("black.jpg", Texture.class);
+
 //		assetManager.load("war3.png", Texture.class);
 		assetManager.load("pixelwars.png", Texture.class);
 

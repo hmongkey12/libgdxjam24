@@ -3,13 +3,13 @@ package com.squashjam.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -38,11 +38,12 @@ public class RenderScreen extends ScreenAdapter {
     private Viewport viewport;
     private Texture backgroundTexture;
     private List<Entity> characters;
-    private ShapeRenderer shapeRenderer;
 
     private Map<String, Integer> gold;
     BitmapFont font;
     private InputHandler inputHandler;
+
+    private Texture blackTexture;
     private AssetManager assetManager;
 
     public RenderScreen(PixelWars game) {
@@ -63,13 +64,13 @@ public class RenderScreen extends ScreenAdapter {
         scheduleGoldIncrement();
         inputHandler = new InputHandler(characters, assetManager);
         gameUI = new GameUI(camera, assetManager);
-        shapeRenderer = new ShapeRenderer();
+        blackTexture = assetManager.get("black.jpg");
     }
 
     private void initCameraAndViewport() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
+        viewport = new FitViewport(1200, 800, camera);
+        camera.setToOrtho(false, viewport.getWorldWidth(), viewport.getWorldHeight());
         viewport.apply();
         Gdx.gl.glClearColor(1, 1, 1, 1);
     }
@@ -81,7 +82,7 @@ public class RenderScreen extends ScreenAdapter {
 
     private void initCharacters() {
         characters = new ArrayList<>();
-        Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.assetManager);
+        Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
         characters.add(chicken);
     }
 
@@ -112,7 +113,7 @@ public class RenderScreen extends ScreenAdapter {
         }
 
         // Handle input
-        inputHandler.handleInput(camera, delta, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), gold);
+        inputHandler.handleInput(camera, delta, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), gold);
         gameUI.updatePositions(camera);
 
         // Update characters
@@ -120,6 +121,7 @@ public class RenderScreen extends ScreenAdapter {
             character.update(delta, characters);
         }
 
+        // Update grenades
         if (grenadierBehavior != null) {
             characters.addAll(grenadierBehavior.getPendingGrenades());
             grenadierBehavior.getPendingGrenades().clear();
@@ -130,17 +132,16 @@ public class RenderScreen extends ScreenAdapter {
 
         // Set the batch projection matrix
         game.batch.setProjectionMatrix(camera.combined);
+
         // Begin the batch
         game.batch.begin();
-        // Draw the background
+//         Draw the background
         drawTiledBackground(game.batch);
         game.batch.end();
 
-        // Set the projection matrix for the ShapeRenderer, draw the darkened rectangle
-        drawDarkenedRectangle();
-
         // Draw the foggy circles around each player entity
         game.batch.begin();
+        drawDarkenedRectangle(game.batch);
         drawFoggyCircles(game.batch);
         game.batch.end();
 
@@ -172,18 +173,16 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private void scheduleCustomEnemySpawning() {
-        scheduleEnemySpawning(EntityType.ABOMINATION, 5);
+//        scheduleEnemySpawning(EntityType.ABOMINATION, 20);
         scheduleEnemySpawning(EntityType.DRONE, 5);
-        scheduleEnemySpawning(EntityType.GRENADIER, 12);
+//        scheduleEnemySpawning(EntityType.GRENADIER, 10);
     }
 
     private void scheduleEnemySpawning(final EntityType entityType, float interval) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                int viewportWidth = Gdx.graphics.getWidth();
-                int viewportHeight = Gdx.graphics.getHeight();
-                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, viewportWidth, viewportHeight, game.assetManager);
+                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
                 if (entityType == EntityType.GRENADIER) {
                     grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
                 }
@@ -195,8 +194,8 @@ public class RenderScreen extends ScreenAdapter {
     private void drawTiledBackground(Batch batch) {
         float backgroundWidth = backgroundTexture.getWidth();
         float backgroundHeight = backgroundTexture.getHeight();
-        int horizontalTiles = (int) Math.ceil(Gdx.graphics.getWidth() / backgroundWidth) + 1;
-        int verticalTiles = (int) Math.ceil(Gdx.graphics.getHeight() / backgroundHeight) + 1;
+        int horizontalTiles = (int) Math.ceil(viewport.getWorldWidth() / backgroundWidth) + 1;
+        int verticalTiles = (int) Math.ceil(viewport.getWorldHeight() / backgroundHeight) + 1;
 
         float startX = camera.position.x - camera.viewportWidth / 2;
         float startY = camera.position.y - camera.viewportHeight / 2;
@@ -220,18 +219,19 @@ public class RenderScreen extends ScreenAdapter {
         characters.stream()
                 .filter(c -> c.getTeam() == EntityTeam.PLAYER)
                 .forEach(c -> {
-                    float foggyCircleSize = c.getEntitySight();
-                    float foggyCircleX = c.getPosition().x - foggyCircleSize / 2;
-                    float foggyCircleY = c.getPosition().y - foggyCircleSize / 2;
-                    batch.draw(foggyCircleTexture, foggyCircleX, foggyCircleY, foggyCircleSize, foggyCircleSize);
+                    float squareWidth = c.getEntitySight() + c.getEntityWidth();
+                    float squareHeight = c.getEntitySight() + c.getEntityHeight();
+                    float squareXPos = c.getPosition().x;
+                    float squareYPos = c.getPosition().y;
+                    batch.draw(foggyCircleTexture, squareXPos, squareYPos, squareWidth, squareHeight * .5f);
                 });
     }
 
-    private void drawDarkenedRectangle() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.5f);
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() + 2000, Gdx.graphics.getHeight());
-        shapeRenderer.end();
+    private void drawDarkenedRectangle(SpriteBatch batch) {
+        // Draw a semi-transparent black texture over the entire screen
+        batch.setColor(.1f, .1f, .15f, 0.9f);
+        batch.draw(blackTexture, 0, 0, viewport.getWorldWidth() + 2000, viewport.getWorldHeight());
+        batch.setColor(Color.WHITE); // Reset the color
     }
 
     private void removeDeadCharacters() {
@@ -249,7 +249,7 @@ public class RenderScreen extends ScreenAdapter {
         return enemy.getTeam() == EntityTeam.PLAYER ||
                 characters.stream()
                         .filter(character -> character.getTeam() == EntityTeam.PLAYER)
-                        .anyMatch(character -> isEntityInPlayerVisibility(character, enemy, character.getEntitySight() / 2));
+                        .anyMatch(character -> isEntityInPlayerVisibility(character, enemy, character.getEntitySight()));
     }
 
     private void drawVisibleEntities(SpriteBatch batch) {
