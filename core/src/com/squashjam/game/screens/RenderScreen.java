@@ -180,9 +180,9 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private void scheduleCustomEnemySpawning() {
-//        scheduleEnemySpawning(EntityType.ABOMINATION, 20);
+        scheduleEnemySpawning(EntityType.ABOMINATION, 20);
         scheduleEnemySpawning(EntityType.DRONE, 10);
-//        scheduleEnemySpawning(EntityType.GRENADIER, 10);
+        scheduleEnemySpawning(EntityType.GRENADIER, 10);
     }
 
     private void scheduleEnemySpawning(final EntityType entityType, float interval) {
