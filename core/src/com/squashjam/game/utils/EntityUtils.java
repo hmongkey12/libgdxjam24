@@ -68,10 +68,15 @@ public class EntityUtils {
     }
 
     public static void updateMovement(Entity entity, float delta) {
-        float dx = (entity.team == EntityTeam.PLAYER ? 1 : -1) * entity.speed * delta;
-        entity.position.x += dx;
-        entity.state = EntityState.MOVING;
+        if (entity.team == EntityTeam.ENEMY) {
+            float dx = -1 * entity.speed * delta;
+            entity.position.x += dx;
+            entity.state = EntityState.MOVING;
+        } else {
+            entity.state = EntityState.IDLE;
+        }
     }
+
 }
 
 

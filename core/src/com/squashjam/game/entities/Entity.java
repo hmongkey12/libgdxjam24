@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
@@ -23,6 +24,8 @@ import java.util.List;
 public class Entity {
     public float entitySight;
     private Sound attackSound;
+
+    private boolean isFollowingMouse;
 
     private Array<Texture> textures;
     public EntityType entityType;
@@ -49,9 +52,24 @@ public class Entity {
     public float attackCooldown;
     private float attackTimer;
 
-    public void update(float delta, List<Entity> otherEntities) {
+//    public void update(float delta, List<Entity> otherEntities) {
+//        if (toBeRemoved) {
+//            return;
+//        }
+//
+//        behavior.update(this, delta, otherEntities);
+//        animationTime += delta;
+//
+//        healthBar.update(new Vector2(position.x, position.y + entityHeight));
+//    }
+
+    public void update(float delta, List<Entity> otherEntities, Vector3 mousePosition) {
         if (toBeRemoved) {
             return;
+        }
+
+        if (isFollowingMouse) {
+            this.position.x = mousePosition.x - (entityWidth / 2);
         }
 
         behavior.update(this, delta, otherEntities);
@@ -104,5 +122,9 @@ public class Entity {
 
     public void dispose() {
         healthBar.dispose();
+    }
+
+    public void setFollowingMouse(boolean isFollowingMouse) {
+        this.isFollowingMouse = isFollowingMouse;
     }
 }

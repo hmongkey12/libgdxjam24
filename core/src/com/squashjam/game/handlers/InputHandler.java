@@ -19,6 +19,8 @@ public class InputHandler {
     private List<Entity> characters;
     private Map<Integer, Float> lastKeyPressTimes;
     private static final float DEBOUNCE_TIME = 0.2f;
+    private Entity followingMouseEntity;
+
 
     AssetManager assetManager;
 
@@ -42,6 +44,12 @@ public class InputHandler {
                     handleKeyPress(key, gold, viewportWidth, viewportHeight);
                     lastKeyPressTimes.put(key, currentTime);
                 }
+            }
+        }
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (followingMouseEntity != null) {
+                followingMouseEntity.setFollowingMouse(false);
+                followingMouseEntity = null;
             }
         }
         camera.update();
@@ -76,32 +84,41 @@ public class InputHandler {
     }
 
     private void summonGrunt(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
-        int localGold = gold.get("gold");
-        int gruntCost = 50;
-        if (localGold >= gruntCost) {
-            gold.put("gold", localGold - gruntCost);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
-            characters.add(newCharacter);
+        if (followingMouseEntity == null) {
+            int localGold = gold.get("gold");
+            int gruntCost = 50;
+            if (localGold >= gruntCost) {
+                gold.put("gold", localGold - gruntCost);
+                followingMouseEntity = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
+                followingMouseEntity.setFollowingMouse(true);
+                characters.add(followingMouseEntity);
+            }
         }
     }
 
     private void summonSniper(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
-        int localGold = gold.get("gold");
-        int sniperCost = 250;
-        if (localGold >= sniperCost) {
-            gold.put("gold", localGold - sniperCost);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
-            characters.add(newCharacter);
+        if (followingMouseEntity == null) {
+            int localGold = gold.get("gold");
+            int sniperCost = 250;
+            if (localGold >= sniperCost) {
+                gold.put("gold", localGold - sniperCost);
+                followingMouseEntity = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
+                followingMouseEntity.setFollowingMouse(true);
+                characters.add(followingMouseEntity);
+            }
         }
     }
 
     private void summonDemolitionist(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
-        int localGold = gold.get("gold");
-        int demolitionistCost = 100;
-        if (localGold >= demolitionistCost) {
-            gold.put("gold", localGold - demolitionistCost);
-            Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
-            characters.add(newCharacter);
+        if (followingMouseEntity == null) {
+            int localGold = gold.get("gold");
+            int demolitionistCost = 100;
+            if (localGold >= demolitionistCost) {
+                gold.put("gold", localGold - demolitionistCost);
+                followingMouseEntity = EntityFactory.createEntity(EntityType.DEMOLITIONIST, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
+                followingMouseEntity.setFollowingMouse(true);
+                characters.add(followingMouseEntity);
+            }
         }
     }
 }

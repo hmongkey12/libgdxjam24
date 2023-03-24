@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -136,9 +137,10 @@ public class RenderScreen extends ScreenAdapter {
         inputHandler.handleInput(camera, delta, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), gold);
         gameUI.updatePositions(camera);
 
-        // Update characters
+        Vector3 mousePosition = new Vector3(Gdx.input.getX(), 0, 0);
+        camera.unproject(mousePosition);
         for (Entity character : characters) {
-            character.update(delta, characters);
+            character.update(delta, characters, mousePosition);
         }
 
         // Update grenades
@@ -191,26 +193,6 @@ public class RenderScreen extends ScreenAdapter {
     public void hide() {
         dispose();
     }
-
-//    private void scheduleCustomEnemySpawning() {
-//        scheduleEnemySpawning(EntityType.ABOMINATION, ABOMINATION_SPAWN_INTERVAL);
-//        scheduleEnemySpawning(EntityType.DRONE, DRONE_SPAWN_INTERVAL);
-//        scheduleEnemySpawning(EntityType.GRENADIER, GRENADIER_SPAWN_INTERVAL);
-//    }
-//
-//    private void scheduleEnemySpawning(final EntityType entityType, float interval) {
-//        Timer.schedule(new Task() {
-//            @Override
-//            public void run() {
-//                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
-//                if (entityType == EntityType.GRENADIER) {
-//                    grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
-//                }
-//                System.out.println("enemy spawned: " + enemy.getEntityType());
-//                characters.add(enemy);
-//            }
-//        }, 0, interval);
-//    }
 
     private void scheduleCustomEnemySpawning() {
         scheduleEnemySpawning(EntityType.ABOMINATION, 0, ABOMINATION_SPAWN_INTERVAL);
