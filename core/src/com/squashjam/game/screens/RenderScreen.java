@@ -29,6 +29,19 @@ import java.util.stream.IntStream;
 
 public class RenderScreen extends ScreenAdapter {
 
+    private static int GOLD_INCREMENT_AMOUNT = 8;
+
+    private static int GOLD_START_AMOUNT = 400;
+    private static int DRONE_GOLD_REWARD = 300;
+    private static int ABOMINATION_GOLD_REWARD = 800;
+
+    private static int GRENADIER_GOLD_REWARD = 400;
+
+    private static int ABOMINATION_SPAWN_INTERVAL = 30;
+    private static int DRONE_SPAWN_INTERVAL = 60;
+    private static int GRENADIER_SPAWN_INTERVAL = 120;
+
+
     private GrenadierBehavior grenadierBehavior;
 
     private GameUI gameUI;
@@ -59,7 +72,7 @@ public class RenderScreen extends ScreenAdapter {
         initCharacters();
         scheduleCustomEnemySpawning();
         gold = new HashMap<>();
-        gold.put("gold", 10000);
+        gold.put("gold", GOLD_START_AMOUNT);
         foggyCircleTexture = assetManager.get("radial_circle.png");
         scheduleGoldIncrement();
         inputHandler = new InputHandler(characters, assetManager);
@@ -93,7 +106,7 @@ public class RenderScreen extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                incrementGold(10); // Increment the gold by 10 every second
+                incrementGold(GOLD_INCREMENT_AMOUNT); // Increment the gold by amount every second
             }
         }, 1, 1); // 1 initial delay, 1 second interval between increments
     }
@@ -179,13 +192,33 @@ public class RenderScreen extends ScreenAdapter {
         dispose();
     }
 
+//    private void scheduleCustomEnemySpawning() {
+//        scheduleEnemySpawning(EntityType.ABOMINATION, ABOMINATION_SPAWN_INTERVAL);
+//        scheduleEnemySpawning(EntityType.DRONE, DRONE_SPAWN_INTERVAL);
+//        scheduleEnemySpawning(EntityType.GRENADIER, GRENADIER_SPAWN_INTERVAL);
+//    }
+//
+//    private void scheduleEnemySpawning(final EntityType entityType, float interval) {
+//        Timer.schedule(new Task() {
+//            @Override
+//            public void run() {
+//                Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
+//                if (entityType == EntityType.GRENADIER) {
+//                    grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
+//                }
+//                System.out.println("enemy spawned: " + enemy.getEntityType());
+//                characters.add(enemy);
+//            }
+//        }, 0, interval);
+//    }
+
     private void scheduleCustomEnemySpawning() {
-        scheduleEnemySpawning(EntityType.ABOMINATION, 20);
-        scheduleEnemySpawning(EntityType.DRONE, 10);
-        scheduleEnemySpawning(EntityType.GRENADIER, 10);
+        scheduleEnemySpawning(EntityType.ABOMINATION, 0, ABOMINATION_SPAWN_INTERVAL);
+        scheduleEnemySpawning(EntityType.DRONE, ABOMINATION_SPAWN_INTERVAL, DRONE_SPAWN_INTERVAL);
+        scheduleEnemySpawning(EntityType.GRENADIER, ABOMINATION_SPAWN_INTERVAL + DRONE_SPAWN_INTERVAL, GRENADIER_SPAWN_INTERVAL);
     }
 
-    private void scheduleEnemySpawning(final EntityType entityType, float interval) {
+    private void scheduleEnemySpawning(final EntityType entityType, float initialDelay, float interval) {
         Timer.schedule(new Task() {
             @Override
             public void run() {
@@ -193,10 +226,12 @@ public class RenderScreen extends ScreenAdapter {
                 if (entityType == EntityType.GRENADIER) {
                     grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
                 }
+                System.out.println("enemy spawned: " + enemy.getEntityType());
                 characters.add(enemy);
             }
-        }, 0, interval);
+        }, initialDelay, interval);
     }
+
 
     private void drawTiledBackground(Batch batch) {
         float backgroundWidth = backgroundTexture.getWidth();
@@ -248,7 +283,23 @@ public class RenderScreen extends ScreenAdapter {
             if (character.isToBeRemoved()) {
                 character.dispose();
                 iterator.remove();
+                if (character.getTeam() == EntityTeam.ENEMY) {
+                    incrementGold(getGoldReward(character));
+                }
             }
+        }
+    }
+
+    private int getGoldReward(Entity enemy) {
+        switch (enemy.getEntityType()) {
+            case ABOMINATION:
+                return ABOMINATION_GOLD_REWARD;
+            case DRONE:
+                return DRONE_GOLD_REWARD;
+            case GRENADIER:
+                return GRENADIER_GOLD_REWARD;
+            default:
+                return 0;
         }
     }
 

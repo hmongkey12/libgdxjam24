@@ -77,8 +77,9 @@ public class InputHandler {
 
     private void summonGrunt(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         int localGold = gold.get("gold");
-        if (localGold >= 100) {
-            gold.put("gold", localGold - 100);
+        int gruntCost = 50;
+        if (localGold >= gruntCost) {
+            gold.put("gold", localGold - gruntCost);
             Entity newCharacter = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
             characters.add(newCharacter);
         }
@@ -86,7 +87,7 @@ public class InputHandler {
 
     private void summonSniper(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         int localGold = gold.get("gold");
-        int sniperCost = 200; // Twice the gold cost of a Grunt Entity
+        int sniperCost = 250;
         if (localGold >= sniperCost) {
             gold.put("gold", localGold - sniperCost);
             Entity newCharacter = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
@@ -96,7 +97,7 @@ public class InputHandler {
 
     private void summonDemolitionist(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         int localGold = gold.get("gold");
-        int demolitionistCost = 300; // Three times the gold cost of a Grunt Entity
+        int demolitionistCost = 100;
         if (localGold >= demolitionistCost) {
             gold.put("gold", localGold - demolitionistCost);
             Entity newCharacter = EntityFactory.createEntity(EntityType.DEMOLITIONIST,EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);

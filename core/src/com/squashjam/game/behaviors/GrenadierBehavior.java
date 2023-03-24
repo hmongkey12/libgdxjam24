@@ -53,7 +53,7 @@ public class GrenadierBehavior extends BaseBehavior {
         int frameRows = 2;
         float frameDuration = 0.1f;
 
-        Vector2 grenadePosition = new Vector2(grenadier.getPosition().x, grenadier.getPosition().y);
+        Vector2 grenadePosition = new Vector2(grenadier.getPosition().x - grenadier.getAttackRange(), grenadier.getPosition().y);
         int grenadeHealth = grenadier.getMaxHealth();
         float attackRange = grenadier.getAttackRange();
         int attackDamage = grenadier.getAttackDamage();
