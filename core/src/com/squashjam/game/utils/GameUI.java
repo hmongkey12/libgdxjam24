@@ -35,11 +35,12 @@ public class GameUI {
 
     private void initUiSquares() {
         uiSquares = new ArrayList<>();
-        uiSquares.add(new UiSquare("grunt_idle.png", 10, 10, 50, 50, "A", assetManager));
-        uiSquares.add(new UiSquare("sniper_idle.png", 70, 10, 50, 50, "S", assetManager));
-        uiSquares.add(new UiSquare("demolition_idle.png", 130, 10, 50, 50, "D", assetManager));
-        uiSquares.add(new UiSquare("uiSquare.png", 190, 10, 50, 50, "left", assetManager));
-        uiSquares.add(new UiSquare("uiSquare.png", 250, 10, 50, 50, "right", assetManager));
+        uiSquares.add(new UiSquare("grunt_idle.png", 10, 10, 70, 50, "", "", assetManager));
+        uiSquares.add(new UiSquare("sniper_idle.png", 110, 10, 70, 50, "", "", assetManager));
+        uiSquares.add(new UiSquare("demolition_idle.png", 210, 10, 70, 50, "", "", assetManager));
+        uiSquares.add(new UiSquare("black.jpg", 10, 60, 70, 50, "A", "Grunt", assetManager));
+        uiSquares.add(new UiSquare("black.jpg", 110, 60, 70, 50, "S", "Sniper", assetManager));
+        uiSquares.add(new UiSquare("black.jpg", 210, 60, 70, 50, "D", "IceMan", assetManager));
     }
 
     public void updatePositions(OrthographicCamera camera) {
@@ -48,10 +49,11 @@ public class GameUI {
         viewportHeight = camera.viewportHeight;
 
         uiSquares.get(0).setPosition(offsetX + 10, offsetY + viewportHeight - 60);
-        uiSquares.get(1).setPosition(offsetX + 70, offsetY + viewportHeight - 60);
-        uiSquares.get(2).setPosition(offsetX + 130, offsetY + viewportHeight - 60);
-        uiSquares.get(3).setPosition(offsetX + 190, offsetY + viewportHeight - 60);
-        uiSquares.get(4).setPosition(offsetX + 250, offsetY + viewportHeight - 60);
+        uiSquares.get(1).setPosition(offsetX + 110, offsetY + viewportHeight - 60);
+        uiSquares.get(2).setPosition(offsetX + 210, offsetY + viewportHeight - 60);
+        uiSquares.get(3).setPosition(offsetX + 10, offsetY + viewportHeight - 120);
+        uiSquares.get(4).setPosition(offsetX + 110, offsetY + viewportHeight - 120);
+        uiSquares.get(5).setPosition(offsetX + 210, offsetY + viewportHeight - 120);
     }
 
     public void draw(SpriteBatch batch) {
@@ -59,7 +61,7 @@ public class GameUI {
             uiSquare.draw(batch, font);
         }
 
-        float goldX = offsetX + 380;
+        float goldX = offsetX + 610;
         float goldY = offsetY + viewportHeight - 45;
 
         font.setColor(Color.WHITE); // Set the font color to white
