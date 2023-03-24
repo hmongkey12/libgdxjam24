@@ -19,11 +19,12 @@ public class SniperBehavior implements EntityBehavior {
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
-        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved() &&
-                (target.getEntityType() == EntityType.ABOMINATION ||
-                        target.getEntityType() == EntityType.GRENADIER ||
-                        target.getEntityType() == EntityType.GRENADE ||
-                        target.getEntityType() == EntityType.DRONE);
+        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
+//                &&
+//                (target.getEntityType() == EntityType.ABOMINATION ||
+//                        target.getEntityType() == EntityType.GRENADIER ||
+//                        target.getEntityType() == EntityType.GRENADE ||
+//                        target.getEntityType() == EntityType.DRONE);
     }
 }
 

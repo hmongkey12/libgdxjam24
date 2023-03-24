@@ -2,27 +2,19 @@ package com.squashjam.game.behaviors;
 
 import com.squashjam.game.entities.Entity;
 import com.squashjam.game.entities.EntityBehavior;
-import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.utils.EntityUtils;
 
 import java.util.List;
 
-public class DemolitionistBehavior implements EntityBehavior {
+public class TowerBehavior implements EntityBehavior {
 
     @Override
     public void update(Entity entity, float delta, List<Entity> otherEntities) {
-        if (EntityUtils.isInAttackRange(entity, otherEntities)) {
-            EntityUtils.updateAttack(entity, delta, otherEntities);
-        } else {
-            EntityUtils.updateMovement(entity, delta);
-        }
+        EntityUtils.updateAttack(entity, delta, otherEntities);
     }
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
         return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
-//                &&
-//                (target.getEntityType() == EntityType.ABOMINATION || target.getEntityType() == EntityType.GRENADIER);
     }
 }
-

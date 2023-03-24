@@ -20,7 +20,9 @@ public class GruntBehavior implements EntityBehavior {
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
-        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved() &&
-                (target.getEntityType() == EntityType.ABOMINATION || target.getEntityType() == EntityType.GRENADIER);
+        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
+//                &&
+//                (target.getEntityType() == EntityType.ABOMINATION ||
+//                        target.getEntityType() == EntityType.GRENADIER);
     }
 }

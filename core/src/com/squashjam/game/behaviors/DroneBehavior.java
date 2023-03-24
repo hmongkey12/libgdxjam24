@@ -20,8 +20,9 @@ public class DroneBehavior implements EntityBehavior {
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
-        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved() &&
-                (target.getEntityType() == EntityType.SNIPER || target.getEntityType() == EntityType.GRUNT ||
-                        target.getEntityType() == EntityType.DEMOLITIONIST || target.getEntityType() == EntityType.CHICKEN);
+        return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
+//                &&
+//                (target.getEntityType() == EntityType.SNIPER || target.getEntityType() == EntityType.GRUNT ||
+//                        target.getEntityType() == EntityType.DEMOLITIONIST || target.getEntityType() == EntityType.CHICKEN);
     }
 }

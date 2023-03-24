@@ -8,6 +8,7 @@ public enum EntityType {
     ABOMINATION,
     DEMOLITIONIST,
     DRONE,
-    CHICKEN;
+    CHICKEN,
+    BUNNY;
 }
 

@@ -55,7 +55,7 @@ public class InputHandler {
             camera.position.x += 200 * delta;
         }
         float halfViewportWidth = camera.viewportWidth / 2f;
-        float maxX = 1600 - halfViewportWidth;
+        float maxX = 2200 - halfViewportWidth;
         float minX = halfViewportWidth;
         camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX);
     }

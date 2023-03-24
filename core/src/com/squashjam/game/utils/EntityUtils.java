@@ -20,11 +20,6 @@ public class EntityUtils {
     }
 
     public static boolean isInAttackRange(Entity entity, List<Entity> otherEntities) {
-        if (otherEntities.stream()
-                .filter(other -> entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other))
-                .anyMatch(other -> entity.getPosition().dst(other.getPosition()) <= entity.attackRange)) {
-            System.out.println("in range");
-        }
         return otherEntities.stream()
                 .filter(other -> entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other))
                 .anyMatch(other -> entity.getPosition().dst(other.getPosition()) <= entity.attackRange);
@@ -49,15 +44,17 @@ public class EntityUtils {
                     .anyMatch(type -> type != EntityType.DEMOLITIONIST);
 
             // Update entity state to ATTACKING if an attack was performed
-            entity.state = attackedOneTarget ? EntityState.ATTACKING :
-                    (entity.getEntityType() != EntityType.CHICKEN) ? EntityState.MOVING :
-                            EntityState.IDLE;
-
-            if (entity.state.equals(EntityState.ATTACKING)) {
+            if (attackedOneTarget) {
+                entity.state = EntityState.ATTACKING;
                 entity.getAttackSound().play();
+            } else if (entity.getEntityType() == EntityType.CHICKEN || entity.getEntityType() == EntityType.BUNNY) {
+                entity.state = EntityState.IDLE;
+            } else {
+                entity.state = EntityState.MOVING;
             }
         }
     }
+
 
 //    public static void updateAttack(Entity entity, float delta, List<Entity> otherEntities) {
 //        float attackTimer = entity.getAttackTimer();
@@ -67,7 +64,13 @@ public class EntityUtils {
 //            boolean attackedOneTarget = otherEntities.stream()
 //                    .filter(other -> entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other))
 //                    .filter(other -> entity.getPosition().dst(other.getPosition()) <= entity.attackRange)
-//                    .peek(other -> other.takeDamage(entity.attackDamage))
+//                    .peek(other -> {
+//                        int damage = entity.attackDamage;
+//                        if (entity.getEntityType() == EntityType.SNIPER && other.getEntityType() == EntityType.DRONE) {
+//                            damage *= 4;
+//                        }
+//                        other.takeDamage(damage);
+//                    })
 //                    .map(Entity::getEntityType)
 //                    .anyMatch(type -> type != EntityType.DEMOLITIONIST);
 //
@@ -75,6 +78,10 @@ public class EntityUtils {
 //            entity.state = attackedOneTarget ? EntityState.ATTACKING :
 //                    (entity.getEntityType() != EntityType.CHICKEN) ? EntityState.MOVING :
 //                            EntityState.IDLE;
+//
+//            if (entity.state.equals(EntityState.ATTACKING)) {
+//                entity.getAttackSound().play();
+//            }
 //        }
 //    }
 

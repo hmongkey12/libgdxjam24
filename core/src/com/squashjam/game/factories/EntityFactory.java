@@ -32,6 +32,8 @@ public class EntityFactory {
                 return createSniper(team, viewportWidth, viewportHeight, assetManager);
             case DEMOLITIONIST:
                 return createDemolitionist(team, viewportWidth, viewportHeight, assetManager);
+            case BUNNY:
+                return createBunny(team, viewportWidth, viewportHeight, assetManager);
             default:
                 throw new IllegalArgumentException("Unsupported enemy type: " + entityType);
         }
@@ -72,35 +74,42 @@ public class EntityFactory {
         String[] texturePaths = {"abomination_move.png", "abomination_idle.png", "abomination_attack.png"};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         Sound attackSound = assetManager.get("punch.mp3");
-        return createBasicEntity(EntityType.ABOMINATION, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 800, 800, 80, 50, 50, 2f, new AbominationBehavior(), textures, 3, 2, 0.2f, 100, attackSound);
+        return createBasicEntity(EntityType.ABOMINATION, team, viewportWidth, viewportHeight, new Vector2(2000, 0), 800, 800, 80, 50, 50, 2f, new AbominationBehavior(), textures, 3, 2, 0.2f, 100, attackSound);
     }
 
     private static Entity createDrone(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"drone_move.png", "drone_idle.png", "drone_attack.png"};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         Sound attackSound = assetManager.get("punch.mp3");
-        return createBasicEntity(EntityType.DRONE, team, viewportWidth, viewportHeight, new Vector2(1600, 100), 100, 100, 150, 300, 10, 0.5f, new DroneBehavior(), textures, 3, 2, 0.2f, 100, attackSound);
+        return createBasicEntity(EntityType.DRONE, team, viewportWidth, viewportHeight, new Vector2(2000, 100), 100, 100, 150, 300, 10, 0.5f, new DroneBehavior(), textures, 3, 2, 0.2f, 100, attackSound);
     }
 
     private static Entity createGrenadier(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"grenadier_move.png", "grenadier_idle.png", "grenadier_attack.png",};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         Sound attackSound = assetManager.get("plant.mp3");
-        return createBasicEntity(EntityType.GRENADIER, team, viewportWidth, viewportHeight, new Vector2(1600, 0), 100, 100, 50, 50, 100, 2f, new GrenadierBehavior(assetManager), textures, 4, 2, 0.2f, 100, attackSound);
+        return createBasicEntity(EntityType.GRENADIER, team, viewportWidth, viewportHeight, new Vector2(2000, 0), 100, 100, 50, 50, 100, 2f, new GrenadierBehavior(assetManager), textures, 4, 2, 0.2f, 100, attackSound);
     }
 
     public static Entity createChickenCharacter(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"chicken_idle.png", "chicken_idle.png", "chicken_attack.png"};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         Sound attackSound = assetManager.get("punch.mp3");
-        return createBasicEntity(EntityType.CHICKEN, team, viewportWidth, viewportHeight, new Vector2(10, 0), 1000, 1000, 0, 300, 100, 1f, new ChickenBehavior(), textures, 4, 2, 0.1f, 400, attackSound);
+        return createBasicEntity(EntityType.CHICKEN, team, viewportWidth, viewportHeight, new Vector2(10, 0), 1000, 1000, 0, 300, 100, 1f, new TowerBehavior(), textures, 4, 2, 0.1f, 800, attackSound);
+    }
+
+    private static Entity createBunny(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
+        String[] texturePaths = {"bunny_idle.png", "bunny_idle.png", "bunny_attack.png"};
+        Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
+        Sound attackSound = assetManager.get("punch.mp3");
+        return createBasicEntity(EntityType.BUNNY, team, viewportWidth, viewportHeight, new Vector2(2000, 0), 1000, 1000, 0, 300, 100, 1f, new TowerBehavior(), textures, 3, 2, 0.1f, 800, attackSound);
     }
 
     private static Entity createGrunt(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {
         String[] texturePaths = {"grunt_move.png", "grunt_idle.png", "grunt_attack.png"};
         Array<Texture> textures = Array.with(loadTextures(texturePaths, assetManager));
         Sound attackSound = assetManager.get("slash.mp3");
-        return createBasicEntity(EntityType.GRUNT, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new GruntBehavior(), textures, 3, 2, 0.1f, 200, attackSound);
+        return createBasicEntity(EntityType.GRUNT, team, viewportWidth, viewportHeight, new Vector2(0, 0), 100, 100, 50, 50, 10, 1f, new GruntBehavior(), textures, 3, 2, 0.1f, 300, attackSound);
     }
 
     private static Entity createSniper(EntityTeam team, int viewportWidth, int viewportHeight, AssetManager assetManager) {

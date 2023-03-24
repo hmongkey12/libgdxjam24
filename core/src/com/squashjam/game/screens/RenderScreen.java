@@ -84,6 +84,9 @@ public class RenderScreen extends ScreenAdapter {
         characters = new ArrayList<>();
         Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
         characters.add(chicken);
+
+        Entity bunny = EntityFactory.createEntity(EntityType.BUNNY, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
+        characters.add(bunny);
     }
 
     private void scheduleGoldIncrement() {
@@ -110,6 +113,10 @@ public class RenderScreen extends ScreenAdapter {
 
         if (characters.stream().filter(character -> character.getEntityType().equals(EntityType.CHICKEN)).count() < 1) {
             game.setScreen(new DefeatOutroScreen(game));
+        }
+
+        if (characters.stream().filter(character -> character.getEntityType().equals(EntityType.BUNNY)).count() < 1) {
+            game.setScreen(new VictoryOutroScreen(game));
         }
 
         // Handle input
@@ -174,7 +181,7 @@ public class RenderScreen extends ScreenAdapter {
 
     private void scheduleCustomEnemySpawning() {
 //        scheduleEnemySpawning(EntityType.ABOMINATION, 20);
-        scheduleEnemySpawning(EntityType.DRONE, 5);
+        scheduleEnemySpawning(EntityType.DRONE, 10);
 //        scheduleEnemySpawning(EntityType.GRENADIER, 10);
     }
 
@@ -246,7 +253,7 @@ public class RenderScreen extends ScreenAdapter {
     }
 
     private boolean isVisible(Entity enemy) {
-        return enemy.getTeam() == EntityTeam.PLAYER ||
+        return enemy.getEntityType() == EntityType.BUNNY || enemy.getTeam() == EntityTeam.PLAYER ||
                 characters.stream()
                         .filter(character -> character.getTeam() == EntityTeam.PLAYER)
                         .anyMatch(character -> isEntityInPlayerVisibility(character, enemy, character.getEntitySight()));
