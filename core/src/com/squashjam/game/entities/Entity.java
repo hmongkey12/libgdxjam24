@@ -26,6 +26,7 @@ public class Entity {
     private Sound attackSound;
 
     private boolean isFollowingMouse;
+    private float freezeTimer;
 
     private Array<Texture> textures;
     public EntityType entityType;
@@ -51,17 +52,7 @@ public class Entity {
     public int attackDamage;
     public float attackCooldown;
     private float attackTimer;
-
-//    public void update(float delta, List<Entity> otherEntities) {
-//        if (toBeRemoved) {
-//            return;
-//        }
-//
-//        behavior.update(this, delta, otherEntities);
-//        animationTime += delta;
-//
-//        healthBar.update(new Vector2(position.x, position.y + entityHeight));
-//    }
+    private EntityType lastAttack;
 
     public void update(float delta, List<Entity> otherEntities, Vector3 mousePosition) {
         if (toBeRemoved) {
@@ -81,6 +72,10 @@ public class Entity {
     public void takeDamage(int damage) {
         this.health -= damage;
         toBeRemoved = (this.health <= 0);
+    }
+
+    public void heal(int healAmount) {
+       this.health += healAmount;
     }
 
     public void draw(Batch batch) {

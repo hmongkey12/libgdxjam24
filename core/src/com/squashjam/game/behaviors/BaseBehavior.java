@@ -20,12 +20,13 @@ public abstract class BaseBehavior implements EntityBehavior {
 
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
-        boolean differentTeams = attacker.getTeam() != target.getTeam();
-        boolean targetNotToRemove = !target.isToBeRemoved();
-        boolean attackerIsEnemyChicken = attacker.getTeam() == EntityTeam.ENEMY && attacker.getEntityType() == EntityType.CHICKEN;
-
-        // Allow attack only if the attacker is a player entity, or an enemy chicken
-        return differentTeams && targetNotToRemove && (attacker.getTeam() == EntityTeam.PLAYER || attackerIsEnemyChicken);
+        if (attacker.getTeam().equals(EntityTeam.ENEMY) && !target.isToBeRemoved() && target.getEntityType().equals(EntityType.CHICKEN)) {
+           return true;
+        } else if (attacker.getTeam().equals(EntityTeam.PLAYER) && !target.isToBeRemoved() && !target.getTeam().equals(EntityTeam.PLAYER)) {
+           return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

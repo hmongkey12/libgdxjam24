@@ -1,7 +1,6 @@
 package com.squashjam.game.behaviors;
 
 import com.squashjam.game.entities.Entity;
-import com.squashjam.game.entities.EntityBehavior;
 import com.squashjam.game.utils.EntityUtils;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class GrenadeBehavior extends BaseBehavior {
 
         // Check for new targets within range
         for (Entity other : otherEntities) {
-            if (entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && EntityUtils.overlap(entity.position, entity.getEntityWidth(), entity.getEntityHeight(), other.position, other.getEntityWidth(), other.getEntityHeight())) {
+            if (entity.getTeam().equals(other.getTeam()) && !other.isToBeRemoved() && EntityUtils.overlap(entity.position, entity.getEntityWidth(), entity.getEntityHeight(), other.position, other.getEntityWidth(), other.getEntityHeight())) {
                 if (!targetsInRange.contains(other)) {
                     targetsInRange.add(other);
                 }
@@ -29,14 +28,14 @@ public class GrenadeBehavior extends BaseBehavior {
 
         // Attack all targets within range
         for (Entity target : targetsInRange) {
-            target.takeDamage(damageDealt);
+            target.heal(damageDealt);
             exploded = true;
         }
         targetsInRange.clear();
 
         // Damage the grenade if it exploded
         if (exploded) {
-            entity.takeDamage(damageDealt);
+            entity.setToBeRemoved(true);
         }
     }
 

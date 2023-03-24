@@ -56,16 +56,13 @@ public class InputHandler {
     }
 
     private void updateCameraPosition(OrthographicCamera camera, float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            camera.position.x -= 200 * delta;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            camera.position.x += 200 * delta;
-        }
+        float mouseX = Gdx.input.getX() * 2200f / Gdx.graphics.getWidth(); // convert mouse X to game world coordinates
         float halfViewportWidth = camera.viewportWidth / 2f;
         float maxX = 2200 - halfViewportWidth;
         float minX = halfViewportWidth;
-        camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX);
+        float targetX = MathUtils.clamp(mouseX, minX, maxX);
+        camera.position.x += (targetX - camera.position.x) * delta * .8f;
+        camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX); // clamp camera position
     }
 
 

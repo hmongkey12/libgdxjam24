@@ -48,12 +48,17 @@ public class EntityUtils {
         return otherEntities.stream()
                 .filter(other -> entity.getTeam() != other.getTeam() && !other.isToBeRemoved() && entity.behavior.canAttack(entity, other))
                 .filter(other -> entity.getPosition().dst(other.getPosition()) <= entity.attackRange)
-                .peek(other -> {
-                    int modifiedDamage = entity.behavior.handleDamage(entity, other);
-                    other.takeDamage(modifiedDamage);
+                .findFirst()
+                .map(target -> {
+                    int modifiedDamage = entity.behavior.handleDamage(entity, target);
+                    target.takeDamage(modifiedDamage);
+                    target.setLastAttack(entity.getEntityType());
+                    if (entity.getEntityType().equals(EntityType.DEMOLITIONIST)) {
+                        target.setFreezeTimer(3f);
+                    }
+                    return true;
                 })
-                .map(Entity::getEntityType)
-                .anyMatch(type -> type != EntityType.DEMOLITIONIST);
+                .orElse(false);
     }
 
     private static void updateEntityStateAfterAttack(Entity entity, boolean attackedOneTarget) {
@@ -69,7 +74,16 @@ public class EntityUtils {
 
     public static void updateMovement(Entity entity, float delta) {
         if (entity.team == EntityTeam.ENEMY) {
-            float dx = -1 * entity.speed * delta;
+
+            float dx;
+            if (entity.getFreezeTimer() > 0) {
+                float freezeTime = entity.getFreezeTimer();
+                entity.setFreezeTimer(freezeTime - delta);
+                dx = -1 * (entity.speed * .5f) * delta;
+            } else {
+                entity.setFreezeTimer(0);
+                dx = -1 * entity.speed * delta;
+            }
             entity.position.x += dx;
             entity.state = EntityState.MOVING;
         } else {

@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.squashjam.game.PixelWars;
-import com.squashjam.game.behaviors.GrenadierBehavior;
 import com.squashjam.game.entities.Entity;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
@@ -29,21 +28,19 @@ import java.util.stream.IntStream;
 
 
 public class RenderScreen extends ScreenAdapter {
+    private static final float VICTORY_TIME = 300; // 5 minutes * 60 seconds
 
     private static int GOLD_INCREMENT_AMOUNT = 8;
 
-    private static int GOLD_START_AMOUNT = 400;
+    private static int GOLD_START_AMOUNT = 800;
     private static int DRONE_GOLD_REWARD = 300;
     private static int ABOMINATION_GOLD_REWARD = 800;
 
     private static int GRENADIER_GOLD_REWARD = 400;
 
-    private static int ABOMINATION_SPAWN_INTERVAL = 30;
-    private static int DRONE_SPAWN_INTERVAL = 60;
-    private static int GRENADIER_SPAWN_INTERVAL = 120;
-
-
-    private GrenadierBehavior grenadierBehavior;
+    private static int ABOMINATION_SPAWN_INTERVAL = 20;
+    private static int DRONE_SPAWN_INTERVAL = 15;
+    private static int GRENADIER_SPAWN_INTERVAL = 5;
 
     private GameUI gameUI;
     private Texture foggyCircleTexture;
@@ -79,6 +76,7 @@ public class RenderScreen extends ScreenAdapter {
         inputHandler = new InputHandler(characters, assetManager);
         gameUI = new GameUI(camera, assetManager);
         blackTexture = assetManager.get("black.jpg");
+        scheduleVictoryTimer();
     }
 
     private void initCameraAndViewport() {
@@ -98,9 +96,6 @@ public class RenderScreen extends ScreenAdapter {
         characters = new ArrayList<>();
         Entity chicken = EntityFactory.createEntity(EntityType.CHICKEN, EntityTeam.PLAYER, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
         characters.add(chicken);
-
-        Entity bunny = EntityFactory.createEntity(EntityType.BUNNY, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
-        characters.add(bunny);
     }
 
     private void scheduleGoldIncrement() {
@@ -129,10 +124,6 @@ public class RenderScreen extends ScreenAdapter {
             game.setScreen(new DefeatOutroScreen(game));
         }
 
-        if (characters.stream().filter(character -> character.getEntityType().equals(EntityType.BUNNY)).count() < 1) {
-            game.setScreen(new VictoryOutroScreen(game));
-        }
-
         // Handle input
         inputHandler.handleInput(camera, delta, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), gold);
         gameUI.updatePositions(camera);
@@ -141,12 +132,6 @@ public class RenderScreen extends ScreenAdapter {
         camera.unproject(mousePosition);
         for (Entity character : characters) {
             character.update(delta, characters, mousePosition);
-        }
-
-        // Update grenades
-        if (grenadierBehavior != null) {
-            characters.addAll(grenadierBehavior.getPendingGrenades());
-            grenadierBehavior.getPendingGrenades().clear();
         }
 
         // Remove dead characters
@@ -205,10 +190,6 @@ public class RenderScreen extends ScreenAdapter {
             @Override
             public void run() {
                 Entity enemy = EntityFactory.createEntity(entityType, EntityTeam.ENEMY, (int) viewport.getWorldWidth(), (int) viewport.getWorldHeight(), game.assetManager);
-                if (entityType == EntityType.GRENADIER) {
-                    grenadierBehavior = (GrenadierBehavior) enemy.getBehavior();
-                }
-                System.out.println("enemy spawned: " + enemy.getEntityType());
                 characters.add(enemy);
             }
         }, initialDelay, interval);
@@ -265,7 +246,8 @@ public class RenderScreen extends ScreenAdapter {
             if (character.isToBeRemoved()) {
                 character.dispose();
                 iterator.remove();
-                if (character.getTeam() == EntityTeam.ENEMY) {
+                System.out.println(character.getLastAttack());
+                if (character.getTeam() == EntityTeam.ENEMY && !isKilledByChicken(character)) {
                     incrementGold(getGoldReward(character));
                 }
             }
@@ -298,6 +280,19 @@ public class RenderScreen extends ScreenAdapter {
                 character.draw(batch);
             }
         }
+    }
+
+    private void scheduleVictoryTimer() {
+        Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                game.setScreen(new VictoryOutroScreen(game));
+            }
+        }, VICTORY_TIME);
+    }
+
+    private boolean isKilledByChicken(Entity enemy) {
+        return enemy.getLastAttack() != null && enemy.getLastAttack().equals(EntityType.CHICKEN);
     }
 }
 

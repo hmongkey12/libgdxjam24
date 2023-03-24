@@ -35,9 +35,9 @@ public class GameUI {
 
     private void initUiSquares() {
         uiSquares = new ArrayList<>();
-        uiSquares.add(new UiSquare("uiSquare.png", 10, 10, 50, 50, "A", assetManager));
-        uiSquares.add(new UiSquare("uiSquare.png", 70, 10, 50, 50, "S", assetManager));
-        uiSquares.add(new UiSquare("uiSquare.png", 130, 10, 50, 50, "D", assetManager));
+        uiSquares.add(new UiSquare("grunt_idle.png", 10, 10, 50, 50, "A", assetManager));
+        uiSquares.add(new UiSquare("sniper_idle.png", 70, 10, 50, 50, "S", assetManager));
+        uiSquares.add(new UiSquare("demolition_idle.png", 130, 10, 50, 50, "D", assetManager));
         uiSquares.add(new UiSquare("uiSquare.png", 190, 10, 50, 50, "left", assetManager));
         uiSquares.add(new UiSquare("uiSquare.png", 250, 10, 50, 50, "right", assetManager));
     }
