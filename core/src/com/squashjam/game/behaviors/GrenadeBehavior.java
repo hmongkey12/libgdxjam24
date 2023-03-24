@@ -9,7 +9,7 @@ import java.util.List;
 
 
 
-public class GrenadeBehavior implements EntityBehavior {
+public class GrenadeBehavior extends BaseBehavior {
 
     private List<Entity> targetsInRange = new ArrayList<>();
 

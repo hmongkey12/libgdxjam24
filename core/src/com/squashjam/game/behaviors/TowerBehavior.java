@@ -17,4 +17,9 @@ public class TowerBehavior implements EntityBehavior {
     public boolean canAttack(Entity attacker, Entity target) {
         return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
     }
+
+    @Override
+    public int handleDamage(Entity entity, Entity target) {
+        return entity.attackDamage;
+    }
 }

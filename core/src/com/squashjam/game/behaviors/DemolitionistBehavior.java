@@ -21,8 +21,12 @@ public class DemolitionistBehavior implements EntityBehavior {
     @Override
     public boolean canAttack(Entity attacker, Entity target) {
         return attacker.getTeam() != target.getTeam() && !target.isToBeRemoved();
-//                &&
-//                (target.getEntityType() == EntityType.ABOMINATION || target.getEntityType() == EntityType.GRENADIER);
     }
+
+    @Override
+    public int handleDamage(Entity entity, Entity target) {
+        return entity.attackDamage;
+    }
+
 }
 

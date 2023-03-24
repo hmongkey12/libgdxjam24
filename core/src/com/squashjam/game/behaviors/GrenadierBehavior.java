@@ -13,7 +13,7 @@ import com.squashjam.game.utils.EntityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GrenadierBehavior implements EntityBehavior {
+public class GrenadierBehavior extends BaseBehavior {
     private List<Entity> pendingGrenades = new ArrayList<>();
     private float grenadeCooldownTimer = 0;
     private float grenadeCooldown = 3.0f; // set the grenade cooldown to 3 seconds
