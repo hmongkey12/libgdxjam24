@@ -53,7 +53,7 @@ public class EntityFactory {
         float entityHeight = viewportHeight * 0.35f;
         HealthBar healthBar;
         List<UiSquare> uiSquares = new ArrayList<>();
-        if (team == EntityTeam.PLAYER) {
+        if (team == EntityTeam.PLAYER && !entityType.equals(EntityType.CHICKEN)) {
             UiSquare uiSquare1 = new UiSquare("black.jpg", startPosition.x, startPosition.y + entityHeight * 1.1f, 60, 60, "Upgrade", "Up", assetManager);
             UiSquare uiSquare2 = new UiSquare("black.jpg", startPosition.x + entityWidth + 70, startPosition.y + entityHeight * 1.1f, 60, 60, "Sell", "Price", assetManager);
             UiSquare uiSquare3 = new UiSquare("black.jpg", startPosition.x + entityWidth + 140, startPosition.y + entityHeight * 1.1f, 60, 60, "Level", currentLevel.toString() , assetManager);

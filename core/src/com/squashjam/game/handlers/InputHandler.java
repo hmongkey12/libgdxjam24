@@ -46,10 +46,23 @@ public class InputHandler {
                 }
             }
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+            if (followingMouseEntity != null) {
+                followingMouseEntity.setToBeRemoved(true);
+                refundGold(followingMouseEntity, gold);
+                followingMouseEntity = null;
+            }
+        }
+
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (followingMouseEntity != null) {
-                followingMouseEntity.setFollowingMouse(false);
-                followingMouseEntity = null;
+                if (!isConflictingPosition(followingMouseEntity, followingMouseEntity.getEntityWidth() / 2)) {
+                    followingMouseEntity.setFollowingMouse(false);
+                    followingMouseEntity = null;
+                } else {
+                    // TODO: show entity can't be placed
+                }
             }
         }
         camera.update();
@@ -117,6 +130,33 @@ public class InputHandler {
                 characters.add(followingMouseEntity);
             }
         }
+    }
+
+    private boolean isConflictingPosition(Entity newEntity, float minDistance) {
+        for (Entity existingEntity : characters) {
+            if (existingEntity == newEntity) continue; // Skip checking against itself
+            float distance = Math.abs(newEntity.position.x - existingEntity.position.x);
+            if (distance < minDistance) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void refundGold(Entity entity, Map<String, Integer> gold) {
+        int cost = 0;
+        switch (entity.getEntityType()) {
+            case GRUNT:
+                cost = 50;
+                break;
+            case SNIPER:
+                cost = 250;
+                break;
+            case DEMOLITIONIST:
+                cost = 100;
+                break;
+        }
+        gold.put("gold", gold.get("gold") + cost);
     }
 }
 

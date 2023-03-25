@@ -41,6 +41,7 @@ public class GameUI {
         uiSquares.add(new UiSquare("black.jpg", 10, 60, 70, 50, "A", "Grunt", assetManager));
         uiSquares.add(new UiSquare("black.jpg", 110, 60, 70, 50, "S", "Sniper", assetManager));
         uiSquares.add(new UiSquare("black.jpg", 210, 60, 70, 50, "D", "IceMan", assetManager));
+        uiSquares.add(new UiSquare("black.jpg", 310, 60, 70, 50, "F", "Cancel", assetManager));
     }
 
     public void updatePositions(OrthographicCamera camera) {
@@ -54,6 +55,7 @@ public class GameUI {
         uiSquares.get(3).setPosition(offsetX + 10, offsetY + viewportHeight - 120);
         uiSquares.get(4).setPosition(offsetX + 110, offsetY + viewportHeight - 120);
         uiSquares.get(5).setPosition(offsetX + 210, offsetY + viewportHeight - 120);
+        uiSquares.get(6).setPosition(offsetX + 310, offsetY + viewportHeight - 120);
     }
 
     public void draw(SpriteBatch batch) {

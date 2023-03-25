@@ -37,10 +37,10 @@ public class RenderScreen extends ScreenAdapter {
     private static int MAX_LEVEL = 4;
 
     private static int GOLD_START_AMOUNT = 800;
-    private static int DRONE_GOLD_REWARD = 300;
-    private static int ABOMINATION_GOLD_REWARD = 800;
+    private static int DRONE_GOLD_REWARD = 20;
+    private static int ABOMINATION_GOLD_REWARD = 10;
 
-    private static int GRENADIER_GOLD_REWARD = 400;
+    private static int GRENADIER_GOLD_REWARD = 20;
 
     private static int ABOMINATION_SPAWN_INTERVAL = 20;
     private static int DRONE_SPAWN_INTERVAL = 15;
@@ -105,6 +105,8 @@ public class RenderScreen extends ScreenAdapter {
                                             gold.put("gold", currentGold - upgradeCost[entityLevel]);
                                             // increment by 2, to offset the decrement and to also increment by 1
                                             entity.setCurrentLevel(entityLevel + 2);
+                                            int oldAttackDamage = entity.getAttackDamage();
+                                            entity.setAttackDamage((int)(oldAttackDamage * 2));
                                         }
                                     }
                                     System.out.println("UiSquare clicked: " + uiSquare.getLabel1());
@@ -161,7 +163,7 @@ public class RenderScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (characters.stream().filter(character -> character.getEntityType().equals(EntityType.CHICKEN)).count() < 1) {
-            game.setScreen(new DefeatOutroScreen(game));
+            game.setScreen(new OutroScreen(game, EntityType.CHICKEN));
         }
 
         // Handle input
@@ -333,7 +335,7 @@ public class RenderScreen extends ScreenAdapter {
         Timer.schedule(new Task() {
             @Override
             public void run() {
-                game.setScreen(new VictoryOutroScreen(game));
+                game.setScreen(new OutroScreen(game, null));
             }
         }, VICTORY_TIME);
     }
