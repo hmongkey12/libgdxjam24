@@ -11,15 +11,20 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.squashjam.game.PixelWars;
 
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.Array;
 
 public class IntroScreen extends ScreenAdapter {
 
     private final PixelWars game;
+    private Music introMusic;
     private BitmapFont font;
+    private boolean played;
 
-    private Texture backgroundImage;
-    private float elapsedTime;
-    private final float INTRO_DURATION = 12f;
+    private int currentBackgroundIndex;
+    private float backgroundTimer;
+    private Array<Texture> backgroundImages;
+    private final float INTRO_AUDIO_DURATION = 24f;
     private OrthographicCamera camera;
     private Viewport viewport;
 
@@ -31,8 +36,15 @@ public class IntroScreen extends ScreenAdapter {
     public void show() {
         font = new BitmapFont();
         font.getData().setScale(2f);
-        backgroundImage = game.assetManager.get("pixelwars.png");
-        elapsedTime = 0;
+        introMusic = game.assetManager.get("panamahat.mp3");
+        introMusic.setLooping(false);
+        backgroundImages = new Array<>();
+        currentBackgroundIndex = 0;
+        backgroundImages.add(game.assetManager.get("pixelwars.png"));
+        backgroundImages.add(game.assetManager.get("war1.png"));
+        backgroundImages.add(game.assetManager.get("war2.png"));
+        backgroundTimer = 0;
+        played = false;
 
         initCameraAndViewport();
 
@@ -67,13 +79,24 @@ public class IntroScreen extends ScreenAdapter {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
-        elapsedTime += delta;
-        if (elapsedTime >= INTRO_DURATION) {
-            skipIntro();
+        if (!played) {
+            introMusic.play();
+            played = true;
+        }
+
+        if (!introMusic.isPlaying()) {
+            game.setScreen(new RenderScreen(game));
+            dispose();
+        }
+
+        backgroundTimer += delta;
+        if (backgroundTimer >= INTRO_AUDIO_DURATION / 3) {
+            backgroundTimer = 0;
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.size;
         }
 
         game.batch.begin();
-        game.batch.draw(backgroundImage, 0, 0, camera.viewportWidth, camera.viewportHeight);
+        game.batch.draw(backgroundImages.get(currentBackgroundIndex), 0, 0, camera.viewportWidth, camera.viewportHeight);
         font.draw(game.batch, "Presented by Hmongkey12", camera.viewportWidth * 0.25f, camera.viewportHeight * 0.5f);
         game.batch.end();
     }
@@ -85,6 +108,7 @@ public class IntroScreen extends ScreenAdapter {
 
     @Override
     public void hide() {
+        introMusic.stop();
         dispose();
     }
 
@@ -94,9 +118,9 @@ public class IntroScreen extends ScreenAdapter {
     }
 
     private void skipIntro() {
+        introMusic.stop();
         Gdx.input.setInputProcessor(null);
         game.setScreen(new RenderScreen(game));
         dispose();
     }
 }
-

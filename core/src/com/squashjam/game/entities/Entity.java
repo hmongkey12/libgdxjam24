@@ -25,7 +25,7 @@ import java.util.List;
 public class Entity {
     public float entitySight;
     private Sound attackSound;
-    private int[] upgradeCost;
+    private Integer[] upgradeCost;
 
     private boolean isFollowingMouse;
     private float freezeTimer;
@@ -52,6 +52,7 @@ public class Entity {
     private int health;
     public float speed;
     public float attackRange;
+    private Integer sellPrice;
     public int attackDamage;
     public float attackCooldown;
     private float attackTimer;
@@ -68,12 +69,26 @@ public class Entity {
         }
 
         if (team == EntityTeam.PLAYER) {
+//            float squareX = position.x + (entityWidth * .3f);
             float squareX = position.x;
+            float squareY = position.y + entityHeight;
             for (UiSquare uiSquare : uiSquares) {
-                uiSquare.setPosition(squareX, position.y + entityHeight);
-                squareX += 70; // Update this value based on the width of your UiSquares
+                uiSquare.setPosition(squareX, squareY);
+                uiSquare.setWidth(entityWidth * .5f);
+                uiSquare.setHeight(entityHeight * .3f);
+                // uiSquare is about 70 in height
+                squareY += 70;
                 if (uiSquare.getLabel1().equalsIgnoreCase("level")) {
                     uiSquare.setLabel2(currentLevel.toString());
+                } else if (uiSquare.getLabel1().equalsIgnoreCase("upgrade")) {
+                    if (upgradeCost[currentLevel - 1] == null) {
+                        uiSquare.setLabel2("MaxLevel");
+                    } else {
+                        uiSquare.setLabel2(upgradeCost[currentLevel - 1].toString());
+                    }
+                } else if (uiSquare.getLabel1().equalsIgnoreCase("sell")) {
+                    sellPrice =  upgradeCost[currentLevel - 1] / 2;
+                    uiSquare.setLabel2(sellPrice.toString());
                 }
             }
         }

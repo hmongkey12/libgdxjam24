@@ -10,30 +10,40 @@ import com.squashjam.game.entities.Entity;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.EntityFactory;
-import com.squashjam.game.utils.UiSquare;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InputHandler {
-    private List<Entity> characters;
+    private final List<Entity> entityList;
     private Map<Integer, Float> lastKeyPressTimes;
+
     private static final float DEBOUNCE_TIME = 0.2f;
+    private static final float NANO_TO_SECONDS = 1000000000f;
+
+    private static final float CAMERA_SPEED = 0.8f;
+    private static final int GAME_WORLD_WIDTH = 2200;
+    private static final int GRUNT_COST = 200;
+    private static final int SNIPER_COST = 500;
+    private static final int DEMOLITIONIST_COST = 300;
+    private static final int GRUNT_REFUND = 50;
+    private static final int SNIPER_REFUND = 250;
+    private static final int DEMOLITIONIST_REFUND = 100;
+    private static final float ENTITY_WIDTH_SCALE = 0.30f;
     private Entity followingMouseEntity;
 
     AssetManager assetManager;
 
-    public InputHandler(List<Entity> characters, AssetManager assetManager) {
+    public InputHandler(List<Entity> entityList, AssetManager assetManager) {
         this.assetManager = assetManager;
-        this.characters = characters;
+        this.entityList = entityList;
         // Initialize last key press times to current time
         lastKeyPressTimes = new HashMap<Integer, Float>();
     }
 
     public void handleInput(OrthographicCamera camera, float delta, int viewportWidth, int viewportHeight, Map<String, Integer> gold) {
-        float currentTime = TimeUtils.nanoTime() / 1000000000f;
+        float currentTime = TimeUtils.nanoTime() / NANO_TO_SECONDS;
         updateCameraPosition(camera, delta);
 
         int[] keys = {Input.Keys.A, Input.Keys.S, Input.Keys.D};
@@ -57,7 +67,7 @@ public class InputHandler {
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (followingMouseEntity != null) {
-                if (!isConflictingPosition(followingMouseEntity, followingMouseEntity.getEntityWidth() / 2)) {
+                if (!isConflictingPosition(followingMouseEntity, (followingMouseEntity.getEntityWidth() * ENTITY_WIDTH_SCALE))) {
                     followingMouseEntity.setFollowingMouse(false);
                     followingMouseEntity = null;
                 } else {
@@ -71,11 +81,11 @@ public class InputHandler {
     private void updateCameraPosition(OrthographicCamera camera, float delta) {
         float mouseX = Gdx.input.getX() * 2200f / Gdx.graphics.getWidth(); // convert mouse X to game world coordinates
         float halfViewportWidth = camera.viewportWidth / 2f;
-        float maxX = 2200 - halfViewportWidth;
+        float maxX = GAME_WORLD_WIDTH - halfViewportWidth;
         float minX = halfViewportWidth;
         float targetX = MathUtils.clamp(mouseX, minX, maxX);
-        camera.position.x += (targetX - camera.position.x) * delta * .8f;
-        camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX); // clamp camera position
+        camera.position.x += (targetX - camera.position.x) * delta * CAMERA_SPEED;
+        camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX); // clamp camera position, 0 is the min and 2200 is max
     }
 
 
@@ -96,12 +106,12 @@ public class InputHandler {
     private void summonGrunt(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         if (followingMouseEntity == null) {
             int localGold = gold.get("gold");
-            int gruntCost = 50;
+            int gruntCost = GRUNT_COST;
             if (localGold >= gruntCost) {
                 gold.put("gold", localGold - gruntCost);
                 followingMouseEntity = EntityFactory.createEntity(EntityType.GRUNT, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
                 followingMouseEntity.setFollowingMouse(true);
-                characters.add(followingMouseEntity);
+                entityList.add(followingMouseEntity);
             }
         }
     }
@@ -109,12 +119,12 @@ public class InputHandler {
     private void summonSniper(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         if (followingMouseEntity == null) {
             int localGold = gold.get("gold");
-            int sniperCost = 250;
+            int sniperCost = SNIPER_COST;
             if (localGold >= sniperCost) {
                 gold.put("gold", localGold - sniperCost);
                 followingMouseEntity = EntityFactory.createEntity(EntityType.SNIPER, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
                 followingMouseEntity.setFollowingMouse(true);
-                characters.add(followingMouseEntity);
+                entityList.add(followingMouseEntity);
             }
         }
     }
@@ -122,19 +132,19 @@ public class InputHandler {
     private void summonDemolitionist(Map<String, Integer> gold, int viewportWidth, int viewportHeight) {
         if (followingMouseEntity == null) {
             int localGold = gold.get("gold");
-            int demolitionistCost = 100;
+            int demolitionistCost = DEMOLITIONIST_COST;
             if (localGold >= demolitionistCost) {
                 gold.put("gold", localGold - demolitionistCost);
                 followingMouseEntity = EntityFactory.createEntity(EntityType.DEMOLITIONIST, EntityTeam.PLAYER, viewportWidth, viewportHeight, assetManager);
                 followingMouseEntity.setFollowingMouse(true);
-                characters.add(followingMouseEntity);
+                entityList.add(followingMouseEntity);
             }
         }
     }
 
     private boolean isConflictingPosition(Entity newEntity, float minDistance) {
-        for (Entity existingEntity : characters) {
-            if (existingEntity == newEntity) continue; // Skip checking against itself
+        for (Entity existingEntity : entityList) {
+            if (existingEntity == newEntity) continue; // don't check self
             float distance = Math.abs(newEntity.position.x - existingEntity.position.x);
             if (distance < minDistance) {
                 return true;
@@ -147,13 +157,13 @@ public class InputHandler {
         int cost = 0;
         switch (entity.getEntityType()) {
             case GRUNT:
-                cost = 50;
+                cost = GRUNT_REFUND;
                 break;
             case SNIPER:
-                cost = 250;
+                cost = SNIPER_REFUND;
                 break;
             case DEMOLITIONIST:
-                cost = 100;
+                cost = DEMOLITIONIST_REFUND;
                 break;
         }
         gold.put("gold", gold.get("gold") + cost);

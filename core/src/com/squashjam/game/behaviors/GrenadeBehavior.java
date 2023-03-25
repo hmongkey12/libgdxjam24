@@ -10,7 +10,7 @@ import java.util.List;
 
 public class GrenadeBehavior extends BaseBehavior {
 
-    private List<Entity> targetsInRange = new ArrayList<>();
+    private final List<Entity> targetsInRange = new ArrayList<>();
 
     @Override
     public void update(Entity entity, float delta, List<Entity> otherEntities) {

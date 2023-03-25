@@ -22,11 +22,7 @@ public abstract class BaseBehavior implements EntityBehavior {
     public boolean canAttack(Entity attacker, Entity target) {
         if (attacker.getTeam().equals(EntityTeam.ENEMY) && !target.isToBeRemoved() && target.getEntityType().equals(EntityType.CHICKEN)) {
            return true;
-        } else if (attacker.getTeam().equals(EntityTeam.PLAYER) && !target.isToBeRemoved() && !target.getTeam().equals(EntityTeam.PLAYER)) {
-           return true;
-        } else {
-            return false;
-        }
+        } else return attacker.getTeam().equals(EntityTeam.PLAYER) && !target.isToBeRemoved() && !target.getTeam().equals(EntityTeam.PLAYER);
     }
 
     @Override
