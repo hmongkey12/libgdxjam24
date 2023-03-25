@@ -7,24 +7,33 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.squashjam.game.PixelWars;
+import com.squashjam.game.enums.EntityType;
 
-public class VictoryOutroScreen extends ScreenAdapter {
+public class OutroScreen extends ScreenAdapter {
 
     private final PixelWars game;
-    private Music outroMusic;
     private Texture background;
+    private EntityType entityType;
+
+    private Music outroMusic;
     private boolean played;
 
-    public VictoryOutroScreen(PixelWars game) {
+    public OutroScreen(PixelWars game, EntityType entityType) {
         this.game = game;
+        this.entityType = entityType;
     }
 
     @Override
     public void show() {
-        outroMusic = game.assetManager.get("victory.mp3"); // switch to new music
-        outroMusic.setLooping(false);
-        background = game.assetManager.get("war1.png"); // switch to new background
-        played = false;
+        if (entityType == null) {
+            outroMusic = game.assetManager.get("panamahat.mp3"); // switch to new music
+            outroMusic.setLooping(false);
+            background = game.assetManager.get("war2.png"); // switch to new background
+        } else {
+            outroMusic = game.assetManager.get("panamahat.mp3"); // switch to new music
+            outroMusic.setLooping(false);
+            background = game.assetManager.get("war1.png"); // switch to new background
+        }
 
         // Set up input handling
         Gdx.input.setInputProcessor(new InputAdapter() {
@@ -56,15 +65,20 @@ public class VictoryOutroScreen extends ScreenAdapter {
             goToRenderScreen();
         }
 
+
         game.batch.begin();
         game.batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.end();
     }
 
     private void goToRenderScreen() {
-        outroMusic.stop();
         Gdx.input.setInputProcessor(null);
         game.setScreen(new RenderScreen(game));
+    }
+
+    @Override
+    public void hide(){
+        outroMusic.stop();
         dispose();
     }
 

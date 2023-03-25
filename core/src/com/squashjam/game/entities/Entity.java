@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.squashjam.game.enums.EntityState;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.utils.AnimationUtils;
+import com.squashjam.game.utils.UiSquare;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,11 @@ import java.util.List;
 public class Entity {
     public float entitySight;
     private Sound attackSound;
+    private Integer[] upgradeCost;
+
+    private boolean isFollowingMouse;
+    private float freezeTimer;
+    private List<UiSquare> uiSquares;
 
     private Array<Texture> textures;
     public EntityType entityType;
@@ -45,24 +52,62 @@ public class Entity {
     private int health;
     public float speed;
     public float attackRange;
+    private Integer sellPrice;
     public int attackDamage;
     public float attackCooldown;
     private float attackTimer;
+    private Integer currentLevel;
+    private EntityType lastAttack;
 
-    public void update(float delta, List<Entity> otherEntities) {
+    public void update(float delta, List<Entity> otherEntities, Vector3 mousePosition) {
         if (toBeRemoved) {
             return;
+        }
+
+        if (isFollowingMouse) {
+            this.position.x = mousePosition.x - (entityWidth / 2);
+        }
+
+        if (team == EntityTeam.PLAYER) {
+//            float squareX = position.x + (entityWidth * .3f);
+            float squareX = position.x;
+            float squareY = position.y + entityHeight;
+            for (UiSquare uiSquare : uiSquares) {
+                uiSquare.setPosition(squareX, squareY);
+                uiSquare.setWidth(entityWidth * .5f);
+                uiSquare.setHeight(entityHeight * .3f);
+                // uiSquare is about 70 in height
+                squareY += 70;
+                if (uiSquare.getLabel1().equalsIgnoreCase("level")) {
+                    uiSquare.setLabel2(currentLevel.toString());
+                } else if (uiSquare.getLabel1().equalsIgnoreCase("upgrade")) {
+                    if (upgradeCost[currentLevel - 1] == null) {
+                        uiSquare.setLabel2("MaxLevel");
+                    } else {
+                        uiSquare.setLabel2(upgradeCost[currentLevel - 1].toString());
+                    }
+                } else if (uiSquare.getLabel1().equalsIgnoreCase("sell")) {
+                    sellPrice =  upgradeCost[currentLevel - 1] / 2;
+                    uiSquare.setLabel2(sellPrice.toString());
+                }
+            }
         }
 
         behavior.update(this, delta, otherEntities);
         animationTime += delta;
 
-        healthBar.update(new Vector2(position.x, position.y + entityHeight));
+        if (healthBar != null) {
+            healthBar.update(new Vector2(position.x, position.y + entityHeight));
+        }
     }
 
     public void takeDamage(int damage) {
         this.health -= damage;
         toBeRemoved = (this.health <= 0);
+    }
+
+    public void heal(int healAmount) {
+       this.health += healAmount;
     }
 
     public void draw(Batch batch) {
@@ -83,7 +128,9 @@ public class Entity {
         batch.draw(currentAnimation.getKeyFrame(animationTime, true), position.x, position.y, entityWidth, entityHeight);
 
         // Draw the health bar
-        healthBar.draw(batch, (float) health / maxHealth);
+        if (healthBar != null) {
+            healthBar.draw(batch, (float) health / maxHealth);
+        }
     }
 
     public static Animation<TextureRegion> createMovingAnimation(Texture movingTexture, int frameCols, int frameRows, float frameDuration) {
@@ -98,11 +145,23 @@ public class Entity {
         return AnimationUtils.createAnimation(attackTexture, frameCols, frameRows, frameDuration);
     }
 
+    public List<UiSquare> getUiSquares() {
+        return uiSquares;
+    }
+
+
+
     public boolean isToBeRemoved() {
         return toBeRemoved;
     }
 
     public void dispose() {
-        healthBar.dispose();
+        if (healthBar != null) {
+            healthBar.dispose();
+        }
+    }
+
+    public void setFollowingMouse(boolean isFollowingMouse) {
+        this.isFollowingMouse = isFollowingMouse;
     }
 }

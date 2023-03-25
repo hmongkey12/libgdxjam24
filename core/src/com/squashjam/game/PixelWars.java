@@ -75,8 +75,8 @@ public class PixelWars extends Game {
 		assetManager.load("black.jpg", Texture.class);
 		assetManager.load("bunny_attack.png", Texture.class);
 		assetManager.load("bunny_idle.png", Texture.class);
+		assetManager.load("panamahat.mp3", Music.class);
 
-//		assetManager.load("war3.png", Texture.class);
 		assetManager.load("pixelwars.png", Texture.class);
 
 		// Load other assets as needed

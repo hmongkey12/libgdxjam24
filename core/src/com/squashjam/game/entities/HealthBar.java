@@ -39,8 +39,8 @@ public class HealthBar {
         return texture;
     }
 
-    public void update(Vector2 characterPosition) {
-        this.position.set(characterPosition.x, characterPosition.y + height);
+    public void update(Vector2 entityPosition) {
+        this.position.set(entityPosition.x, entityPosition.y + height);
     }
 
     public void draw(Batch batch, float healthPercentage) {
