@@ -1,6 +1,8 @@
 package com.squashjam.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -22,6 +24,7 @@ import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.EntityFactory;
 import com.squashjam.game.handlers.InputHandler;
 import com.squashjam.game.utils.GameUI;
+import com.squashjam.game.utils.UiSquare;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -31,6 +34,7 @@ public class RenderScreen extends ScreenAdapter {
     private static final float VICTORY_TIME = 300; // 5 minutes * 60 seconds
 
     private static int GOLD_INCREMENT_AMOUNT = 8;
+    private static int MAX_LEVEL = 4;
 
     private static int GOLD_START_AMOUNT = 800;
     private static int DRONE_GOLD_REWARD = 300;
@@ -45,13 +49,14 @@ public class RenderScreen extends ScreenAdapter {
     private GameUI gameUI;
     private Texture foggyCircleTexture;
     private final PixelWars game;
+
+    private BitmapFont font;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Texture backgroundTexture;
     private List<Entity> characters;
 
     private Map<String, Integer> gold;
-    BitmapFont font;
     private InputHandler inputHandler;
 
     private Texture blackTexture;
@@ -65,6 +70,8 @@ public class RenderScreen extends ScreenAdapter {
     public void show() {
         // Initialize camera, viewport, and background
         this.assetManager = game.assetManager;
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
         initCameraAndViewport();
         initBackground();
         initCharacters();
@@ -77,6 +84,39 @@ public class RenderScreen extends ScreenAdapter {
         gameUI = new GameUI(camera, assetManager);
         blackTexture = assetManager.get("black.jpg");
         scheduleVictoryTimer();
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (button == Input.Buttons.LEFT) {
+                    // Convert screen coordinates to game world coordinates
+                    Vector3 worldCoords = camera.unproject(new Vector3(screenX, screenY, 0));
+
+                    for (Entity entity : characters) {
+                        if (entity.getTeam() == EntityTeam.PLAYER) {
+                            for (UiSquare uiSquare : entity.getUiSquares()) {
+                                if (uiSquare.checkClick(worldCoords.x, worldCoords.y)) {
+                                    if (uiSquare.getLabel1().equalsIgnoreCase("upgrade")){
+                                        // decrement it because entity level starts at 0, but level starts at 1
+                                        int entityLevel = entity.getCurrentLevel() - 1;
+                                        int[] upgradeCost = entity.getUpgradeCost();
+                                        // Max level is the max of the levels, but the upgradeCost array starts at 0
+                                        if (entityLevel < MAX_LEVEL - 1 &&  gold.get("gold") >= upgradeCost[entityLevel]) {
+                                            int currentGold = gold.get("gold");
+                                            gold.put("gold", currentGold - upgradeCost[entityLevel]);
+                                            // increment by 2, to offset the decrement and to also increment by 1
+                                            entity.setCurrentLevel(entityLevel + 2);
+                                        }
+                                    }
+                                    System.out.println("UiSquare clicked: " + uiSquare.getLabel1());
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private void initCameraAndViewport() {
@@ -157,6 +197,13 @@ public class RenderScreen extends ScreenAdapter {
         drawTiledBackground(game.batch);
         game.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         drawVisibleEntities(game.batch);
+        for (Entity character : characters) {
+            if (character.getTeam() == EntityTeam.PLAYER) {
+                for (UiSquare uiSquare : character.getUiSquares()) {
+                    uiSquare.draw(game.batch, font);
+                }
+            }
+        }
         gameUI.draw(game.batch);
         game.batch.end();
     }

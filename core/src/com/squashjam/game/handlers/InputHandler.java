@@ -10,7 +10,9 @@ import com.squashjam.game.entities.Entity;
 import com.squashjam.game.enums.EntityTeam;
 import com.squashjam.game.enums.EntityType;
 import com.squashjam.game.factories.EntityFactory;
+import com.squashjam.game.utils.UiSquare;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +23,11 @@ public class InputHandler {
     private static final float DEBOUNCE_TIME = 0.2f;
     private Entity followingMouseEntity;
 
-
     AssetManager assetManager;
 
     public InputHandler(List<Entity> characters, AssetManager assetManager) {
         this.assetManager = assetManager;
         this.characters = characters;
-
         // Initialize last key press times to current time
         lastKeyPressTimes = new HashMap<Integer, Float>();
     }

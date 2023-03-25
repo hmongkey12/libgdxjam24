@@ -5,7 +5,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 public class UiSquare {
     private Texture texture;
     private float x;
@@ -37,5 +42,14 @@ public class UiSquare {
         float labelY = y + height / 2 + font.getXHeight() / 2;
         font.draw(batch, label1, labelX, labelY);
         font.draw(batch, label2, labelX, labelY - 20);
+    }
+
+    public boolean checkClick(float screenX, float screenY) {
+        if (screenX >= x && screenX <= x + width &&
+                screenY >= y && screenY <= y + height) {
+            // The click is inside the UiSquare
+            return true;
+        }
+        return false;
     }
 }
